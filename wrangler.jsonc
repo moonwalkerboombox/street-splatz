@@ -1,0 +1,12 @@
+// Cloudflare Workers static assets. There is no Worker script: Cloudflare serves the built site as files.
+// The build step (see contracts/DEPLOY.md) writes the site into site/dist first.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "street-splatz",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./site/dist",
+    // An unknown address gets site/dist/404.html with a 404 status.
+    "not_found_handling": "404-page"
+  }
+}

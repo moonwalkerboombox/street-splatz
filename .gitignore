@@ -12,3 +12,4 @@ site/public/cards.json
 site/test-results/
 site/playwright-report/
 .wrangler/
+site/.e2e/

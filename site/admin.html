@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Machine Room | Street Splatz</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Boogaloo&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="admin">
+<main class="admin-main">
+  <h1 class="admin-title">MACHINE ROOM</h1>
+  <p class="admin-sub">Owner controls for The Machine. Only the owner wallet can use the buttons.</p>
+
+  <section class="admin-card" aria-labelledby="adState">
+    <h2 id="adState">The Machine</h2>
+    <dl class="admin-dl">
+      <div><dt>Network</dt><dd id="adNet">...</dd></div>
+      <div><dt>Contract</dt><dd id="adContract">...</dd></div>
+      <div><dt>Owner</dt><dd id="adOwner">...</dd></div>
+      <div><dt>Balance</dt><dd id="adBalance">...</dd></div>
+      <div><dt>Price</dt><dd id="adPrice">...</dd></div>
+      <div><dt>Sale</dt><dd id="adSale">...</dd></div>
+      <div><dt>Cards left</dt><dd id="adLeft">...</dd></div>
+    </dl>
+    <button type="button" class="sbtn" id="adRefresh">Refresh</button>
+  </section>
+
+  <section class="admin-card" aria-labelledby="adWallet">
+    <h2 id="adWallet">Your wallet</h2>
+    <p id="adAccount">Not connected</p>
+    <div class="wlist" id="adWallets"></div>
+    <button type="button" class="mbtn bl" id="adConnect">CONNECT WALLET</button>
+  </section>
+
+  <section class="admin-card" aria-labelledby="adActions">
+    <h2 id="adActions">Controls</h2>
+    <div class="admin-actions">
+      <button type="button" class="mbtn p" id="adOpen" disabled>Open sale</button>
+      <button type="button" class="mbtn s" id="adClose" disabled>Close sale</button>
+    </div>
+    <form class="admin-price" id="adPriceForm">
+      <label for="adPriceInput">New price in ETH</label>
+      <input id="adPriceInput" inputmode="decimal" autocomplete="off" placeholder="0.0003" disabled>
+      <button type="submit" class="mbtn bl" id="adSetPrice" disabled>Set price</button>
+    </form>
+    <button type="button" class="mbtn p" id="adWithdraw" disabled>Withdraw</button>
+  </section>
+
+  <section class="admin-card" aria-labelledby="adLogHead">
+    <h2 id="adLogHead">Results</h2>
+    <ol class="admin-log" id="adLog" aria-live="polite"><li>Nothing yet.</li></ol>
+  </section>
+</main>
+<script type="module" src="/src/admin.js"></script>
+</body>
+</html>

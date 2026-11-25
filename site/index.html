@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Street Splatz | Wild flavor drops</title>
+<meta name="description" content="Drop a coin and pull one of 100 Street Splatz cards from The Machine on Base. Genesis Drop. 100 only.">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Street Splatz">
+<meta property="og:description" content="Wild flavor drops. Drop a coin and pull one of 100 cards from The Machine on Base.">
+<meta property="og:image" content="__SITE_URL__/img/016.png">
+<meta property="og:image:width" content="520">
+<meta property="og:image:height" content="720">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Boogaloo&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+
+<nav aria-label="Machine status">
+  <div class="logo">STREET SPLATZ<span class="tagline">Wild flavor drops</span></div>
+  <div class="nav-r">
+    <div><span class="ns-l">Pulled</span><span class="ns-v" id="navPulled">...</span></div>
+    <div><span class="ns-l">The Pull</span><span class="ns-v" id="navPrice">...</span></div>
+    <div class="wcon" id="walletNav" hidden><span class="wdot"></span><span id="walletNavAddr"></span></div>
+  </div>
+</nav>
+
+<main>
+
+  <div class="machine-wrap" id="machine">
+    <div class="m-cap"><div class="m-knob"></div></div>
+    <div class="m-glass" id="glass">
+      <div class="m-glass-label">STREET SPLATZ</div>
+      <div class="gb-grid" id="gbGrid"></div>
+      <div class="m-shine"></div><div class="m-shine-r"></div>
+      <div class="soldout-stamp" id="soldStamp" hidden>SOLD OUT</div>
+      <div class="ee-face" id="eeFace" aria-hidden="true">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle cx="45" cy="45" r="42" fill="#e31e24" stroke="#ff4444" stroke-width="2"/>
+          <ellipse cx="31" cy="30" rx="8" ry="5" fill="rgba(255,255,255,.2)" transform="rotate(-20 31 30)"/>
+          <ellipse cx="30" cy="44" rx="11" ry="7" fill="#111"/>
+          <ellipse cx="60" cy="44" rx="11" ry="7" fill="#111"/>
+          <ellipse cx="27" cy="42" rx="4" ry="3" fill="white"/>
+          <ellipse cx="57" cy="42" rx="4" ry="3" fill="white"/>
+          <ellipse cx="28" cy="42" rx="2" ry="2" fill="#111"/>
+          <ellipse cx="58" cy="42" rx="2" ry="2" fill="#111"/>
+          <ellipse cx="45" cy="52" rx="4" ry="2" fill="#b01818"/>
+          <path d="M24 64 Q45 80 66 64" stroke="#111" stroke-width="3" fill="#cc0000" stroke-linecap="round"/>
+          <rect x="32" y="64" width="6" height="5" rx="1" fill="white"/>
+          <rect x="40" y="65" width="6" height="6" rx="1" fill="white"/>
+          <rect x="48" y="65" width="6" height="6" rx="1" fill="white"/>
+          <rect x="56" y="64" width="6" height="5" rx="1" fill="white"/>
+          <ellipse cx="45" cy="88" rx="28" ry="4" fill="rgba(255,255,255,.06)"/>
+        </svg>
+      </div>
+      <div class="ee-tap-hint" id="eeTapHint" aria-hidden="true">tap the glass</div>
+    </div>
+    <div class="m-collar"></div>
+    <div class="m-base">
+      <div class="m-mech">
+        <div class="m-slot"></div>
+        <div class="m-handle"><div class="m-indent" id="mIndent"></div></div>
+        <div class="m-badge">SS</div>
+      </div>
+    </div>
+    <div class="m-chute-wrap"><div class="m-chute"><div class="dgb" id="dgb"></div></div></div>
+    <div class="m-plate"></div>
+  </div>
+
+  <div class="coin-cta" id="coinCta">
+    <div class="arrow" id="coinArrow" aria-hidden="true">&#9650;</div>
+    <button type="button" class="coin" id="coin" aria-label="Drop a coin and pull a Splatz"></button>
+    <a class="mbtn p cta-link" id="soldLink" target="_blank" rel="noopener" hidden>View on OpenSea</a>
+    <h1 class="cta-label" id="ctaLabel">Drop a Coin. Pull 1 of 100.</h1>
+    <p class="cta-sub" id="ctaSub" aria-live="polite">Checking The Machine</p>
+  </div>
+
+  <div class="notice" id="notice" role="alert" hidden>
+    <span id="noticeText"></span>
+    <button type="button" class="notice-btn" id="retryBtn">Retry</button>
+  </div>
+
+  <section class="drops" id="drops" aria-label="Recent pulls" hidden>
+    <div class="drops-label">Fresh off The Machine</div>
+    <ul class="drops-list" id="dropsList"></ul>
+  </section>
+
+  <section class="ex-sect" aria-labelledby="exHead">
+    <h2 id="exHead">100 SPLATZ. THAT IS IT.</h2>
+    <div class="ex-grid">
+      <div class="ex-card"><span class="ex-n">01</span><div><h3 class="ex-t">Drop a Coin</h3><p class="ex-b" id="ex1"></p></div></div>
+      <div class="ex-card"><span class="ex-n">02</span><div><h3 class="ex-t">Pull a Splatz</h3><p class="ex-b" id="ex2"></p></div></div>
+      <div class="ex-card"><span class="ex-n">03</span><div><h3 class="ex-t">Own the Block</h3><p class="ex-b" id="ex3"></p></div></div>
+    </div>
+  </section>
+
+  <section class="gallery-sect" aria-labelledby="galHead">
+    <h2 id="galHead">THE FULL GLASS</h2>
+    <p class="gallery-sub" id="gallerySub">All 100 Genesis Splatz. Pulled ones are revealed. The rest are still in The Machine.</p>
+    <p class="gallery-pick" id="galleryPick" aria-live="polite">Tap a gumball to see what it is.</p>
+    <div class="gallery-grid" id="galleryGrid"></div>
+
+    <h3 class="odds-head">WHAT IS LEFT IN THE MACHINE</h3>
+    <div class="odds-wrap">
+      <table class="odds" id="oddsTable">
+        <thead><tr><th scope="col">Tier</th><th scope="col">Left</th><th scope="col">Next pull</th></tr></thead>
+        <tbody id="oddsBody"></tbody>
+      </table>
+    </div>
+    <p class="odds-note" id="oddsNote"></p>
+  </section>
+
+  <div class="foot">
+    <div class="fs"><span class="fv rv" id="footPulled">...</span><span class="fl">Pulled</span></div>
+    <div class="fs"><span class="fv bv">100</span><span class="fl">Total Supply</span></div>
+    <div class="fs"><span class="fv rv" id="footLegends">...</span><span class="fl">Legends Left</span></div>
+    <div class="fs"><span class="fv wv" id="footNet">Base</span><span class="fl">Network</span></div>
+  </div>
+
+  <section class="fine" aria-labelledby="fineHead">
+    <h2 id="fineHead">THE FINE PRINT</h2>
+    <ul>
+      <li>100 only. This is the Genesis Drop.</li>
+      <li>Every pull costs the same. The price is set in ETH, so the dollar amount moves.</li>
+      <li>The Machine picks from the cards left using public block data. It is not verifiable randomness.</li>
+      <li>All sales final. Blockchain transactions cannot be reversed.</li>
+      <li>Art and metadata are hosted by the project.</li>
+      <li>For collectors 18 and older.</li>
+      <li>Collectibles only. No promise of value.</li>
+    </ul>
+    <dl class="fine-data">
+      <div><dt>Contract</dt><dd id="fineContract">Posts here when The Machine opens</dd></div>
+      <div><dt>Provenance fingerprint</dt><dd id="fineProv">...</dd></div>
+    </dl>
+  </section>
+
+</main>
+
+<footer>
+  <p>&copy; <span id="year"></span> Street Splatz. All rights reserved. Built on Base.</p>
+</footer>
+
+<dialog id="modal" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="mh"><h2 id="modalTitle"></h2><button type="button" class="mcl" id="modalClose" aria-label="Close">&#10005;</button></div>
+    <div class="mb" id="modalBody"></div>
+  </div>
+</dialog>
+
+<noscript><p class="noscript">Street Splatz needs JavaScript to talk to The Machine.</p></noscript>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
