@@ -1,0 +1,51 @@
+{
+  "name": "Vanilla Brawler #016",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/016.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Vanilla"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Heart"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Fang"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Showboat"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Street Legend"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 6
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 8
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 8
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 9
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 10
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 41
+    }
+  ]
+}

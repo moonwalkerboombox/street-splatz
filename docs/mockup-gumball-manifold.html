@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STREET SPLATZ</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Bangers&display=swap');
+:root{--r:#e31e24;--b:#1a1aff;--k:#0a0a0a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--k);font-family:'Boogaloo',cursive;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#181818 1px,transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:14px 32px;background:rgba(10,10,10,0.97);border-bottom:2px solid #1f1f1f;backdrop-filter:blur(10px);}
+.logo{font-family:'Bangers',cursive;font-size:2rem;letter-spacing:3px;color:#fff;text-shadow:3px 3px 0 var(--r);}
+.logo span{color:#fff;text-shadow:3px 3px 0 var(--r);}
+.nav-r{display:flex;align-items:center;gap:28px;}
+.ns-l{font-size:.65rem;color:#555;text-transform:uppercase;letter-spacing:2px;display:block;text-align:center;}
+.ns-v{font-family:'Bangers',cursive;font-size:1.2rem;color:var(--r);display:block;text-align:center;}
+.wcon{display:none;align-items:center;gap:8px;background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:7px 16px;font-size:.85rem;color:#888;}
+.wdot{width:8px;height:8px;border-radius:50%;background:#0c6;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+/* MAIN */
+main{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding-top:90px;padding-bottom:80px;}
+
+/* HERO */
+.hero{text-align:center;padding:36px 24px 32px;}
+.hero h1{font-family:'Bangers',cursive;font-size:5rem;letter-spacing:6px;line-height:1;color:#fff;text-shadow:5px 5px 0 var(--r),10px 10px 0 var(--b);}
+
+/* MACHINE */
+.machine-wrap{display:flex;flex-direction:column;align-items:center;}
+.m-cap{width:220px;height:22px;background:linear-gradient(180deg,#e8e8e8,#a0a0a0,#c8c8c8);border-radius:6px 6px 0 0;box-shadow:0 -2px 8px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;}
+.m-knob{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#888);box-shadow:0 2px 4px rgba(0,0,0,.5);}
+.m-glass{width:220px;height:220px;background:rgba(255,255,255,.06);border:3px solid #555;border-top:none;border-bottom:none;position:relative;overflow:hidden;box-shadow:inset 0 0 40px rgba(0,0,0,.3);}
+.m-glass-label{position:absolute;top:8px;left:0;right:0;text-align:center;font-size:.6rem;letter-spacing:3px;color:rgba(200,200,200,.25);text-transform:uppercase;z-index:2;}
+.gb-grid{position:absolute;bottom:0;left:0;right:0;height:210px;display:flex;flex-wrap:wrap;align-content:flex-end;padding:4px;gap:2px;}
+.gbl{border-radius:50%;flex-shrink:0;box-shadow:inset -2px -2px 4px rgba(0,0,0,.4),inset 2px 2px 4px rgba(255,255,255,.25);}
+.gbl:nth-child(3n+1){animation:gf1 1.1s ease-in-out infinite;}
+.gbl:nth-child(3n+2){animation:gf2 .9s ease-in-out infinite;}
+.gbl:nth-child(3n){animation:gf3 1.3s ease-in-out infinite;}
+.gbl:nth-child(5n+1){animation:gf4 .8s ease-in-out infinite;}
+.gbl:nth-child(5n+2){animation:gf5 1.4s ease-in-out infinite;}
+.gbl:nth-child(7n){animation:gf6 .7s ease-in-out infinite;}
+.gbl:nth-child(4n){animation:gf7 1.0s ease-in-out infinite;}
+.gbl:nth-child(6n){animation:gf8 .85s ease-in-out infinite;}
+.gbl:nth-child(1){animation-delay:0s}
+.gbl:nth-child(2){animation-delay:-.18s}
+.gbl:nth-child(3){animation-delay:-.35s}
+.gbl:nth-child(4){animation-delay:-.52s}
+.gbl:nth-child(5){animation-delay:-.7s}
+.gbl:nth-child(6){animation-delay:-.9s}
+.gbl:nth-child(7){animation-delay:-.12s}
+.gbl:nth-child(8){animation-delay:-.44s}
+.gbl:nth-child(9){animation-delay:-.66s}
+.gbl:nth-child(10){animation-delay:-.23s}
+.gbl:nth-child(11){animation-delay:-.81s}
+.gbl:nth-child(12){animation-delay:-.37s}
+.gbl:nth-child(13){animation-delay:-.55s}
+.gbl:nth-child(14){animation-delay:-.08s}
+.gbl:nth-child(15){animation-delay:-.75s}
+@keyframes gf1{0%{transform:translateY(0) translateX(0) rotate(0) scale(1)}20%{transform:translateY(-12px) translateX(6px) rotate(25deg) scale(1.15)}40%{transform:translateY(-6px) translateX(-8px) rotate(-15deg) scale(.9)}60%{transform:translateY(-16px) translateX(4px) rotate(40deg) scale(1.1)}80%{transform:translateY(-4px) translateX(-5px) rotate(-30deg) scale(.95)}100%{transform:translateY(0) translateX(0) rotate(0) scale(1)}}
+@keyframes gf2{0%{transform:translateY(0) translateX(0) rotate(0) scale(1)}15%{transform:translateY(-8px) translateX(-10px) rotate(-35deg) scale(1.2)}35%{transform:translateY(-18px) translateX(5px) rotate(20deg) scale(.85)}55%{transform:translateY(-5px) translateX(9px) rotate(-50deg) scale(1.1)}75%{transform:translateY(-14px) translateX(-6px) rotate(30deg) scale(.92)}100%{transform:translateY(0) translateX(0) rotate(0) scale(1)}}
+@keyframes gf3{0%{transform:translateY(0) rotate(0) scale(1)}25%{transform:translateY(-20px) rotate(60deg) scale(1.18)}50%{transform:translateY(-8px) rotate(-40deg) scale(.88)}75%{transform:translateY(-15px) rotate(55deg) scale(1.05)}100%{transform:translateY(0) rotate(0) scale(1)}}
+@keyframes gf4{0%{transform:translateY(0) translateX(0) rotate(0)}30%{transform:translateY(-10px) translateX(12px) rotate(-70deg)}60%{transform:translateY(-22px) translateX(-4px) rotate(45deg)}100%{transform:translateY(0) translateX(0) rotate(0)}}
+@keyframes gf5{0%{transform:translateY(0) scale(1) rotate(0)}20%{transform:translateY(-7px) scale(1.25) rotate(30deg)}45%{transform:translateY(-19px) scale(.8) rotate(-55deg)}70%{transform:translateY(-9px) scale(1.15) rotate(40deg)}100%{transform:translateY(0) scale(1) rotate(0)}}
+@keyframes gf6{0%{transform:translateX(0) translateY(0) rotate(0)}25%{transform:translateX(-14px) translateY(-10px) rotate(80deg)}50%{transform:translateX(10px) translateY(-20px) rotate(-60deg)}75%{transform:translateX(-6px) translateY(-8px) rotate(45deg)}100%{transform:translateX(0) translateY(0) rotate(0)}}
+@keyframes gf7{0%{transform:translateY(0) rotate(0) scale(1)}33%{transform:translateY(-14px) rotate(-90deg) scale(1.2)}66%{transform:translateY(-6px) rotate(60deg) scale(.85)}100%{transform:translateY(0) rotate(0) scale(1)}}
+@keyframes gf8{0%{transform:translateX(0) translateY(0) scale(1)}40%{transform:translateX(10px) translateY(-16px) scale(1.3) rotate(50deg)}80%{transform:translateX(-8px) translateY(-6px) scale(.8) rotate(-40deg)}100%{transform:translateX(0) translateY(0) scale(1)}}
+.m-shine{position:absolute;top:0;left:4px;width:20px;bottom:0;background:linear-gradient(90deg,rgba(255,255,255,.08),transparent);pointer-events:none;z-index:2;}
+.m-shine-r{position:absolute;top:0;right:4px;width:20px;bottom:0;background:linear-gradient(270deg,rgba(255,255,255,.05),transparent);pointer-events:none;z-index:2;}
+.m-collar{width:220px;height:18px;background:linear-gradient(180deg,#aaa,#e0e0e0,#aaa);border:1px solid #888;box-shadow:0 4px 8px rgba(0,0,0,.5);}
+.m-base{width:200px;background:linear-gradient(160deg,#cc1a1f,#a01015,#cc1a1f);border:3px solid #888;border-top:none;box-shadow:0 0 30px rgba(200,20,24,.3);}
+.m-mech{margin:12px auto 0;width:140px;background:linear-gradient(180deg,#ccc,#f0f0f0,#bbb);border:2px solid #999;border-radius:6px;padding:10px 12px;box-shadow:0 4px 12px rgba(0,0,0,.4);}
+.m-slot{width:60px;height:7px;background:#333;border-radius:3px;margin:0 auto 8px;border:1px solid #555;box-shadow:inset 0 2px 4px rgba(0,0,0,.8);}
+.m-handle{width:80px;height:32px;background:linear-gradient(160deg,#d0d0d0,#f8f8f8,#b0b0b0);border-radius:16px;margin:0 auto;border:2px solid #aaa;box-shadow:0 3px 8px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;}
+.m-indent{width:40px;height:14px;background:linear-gradient(180deg,#888,#ccc);border-radius:7px;border:1px solid #999;box-shadow:inset 0 2px 4px rgba(0,0,0,.3);}
+.m-indent.spin{animation:hpush .3s ease-in-out infinite alternate;}
+@keyframes hpush{0%{transform:translateY(0)}100%{transform:translateY(2px)}}
+.m-badge{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#d0d0d0,#888);border:2px solid #aaa;margin:8px auto 0;display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#555;text-transform:uppercase;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,.3);}
+.m-chute-wrap{width:200px;background:linear-gradient(160deg,#a01015,#880c10);border:3px solid #777;border-top:none;padding:8px 0 12px;display:flex;justify-content:center;}
+.m-chute{width:50px;height:30px;background:#111;border-radius:0 0 16px 16px;border:2px solid #444;border-top:none;position:relative;overflow:hidden;box-shadow:inset 0 4px 8px rgba(0,0,0,.8);}
+.dgb{width:24px;height:24px;border-radius:50%;background:var(--r);position:absolute;top:-30px;left:50%;transform:translateX(-50%);opacity:0;}
+.dgb.drop{animation:gbdrop .9s ease-in forwards;}
+@keyframes gbdrop{0%{top:-30px;opacity:1}60%{top:4px;opacity:1}100%{top:4px;opacity:0}}
+.m-plate{width:220px;height:20px;background:linear-gradient(180deg,#bbb,#e8e8e8,#aaa);border:2px solid #888;border-top:none;border-radius:0 0 8px 8px;box-shadow:0 6px 16px rgba(0,0,0,.5);}
+
+/* ROADMAP TAG */
+.roadmap-tag{margin-top:16px;text-align:center;font-family:'Boogaloo',cursive;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:#888;background:#0a0a0a;border:1px solid #1f1f1f;border-radius:10px;padding:10px;}
+
+/* GALLERY */
+.gallery-sect{padding:48px 32px 24px;text-align:center;}
+.gallery-sect h2{font-family:'Bangers',cursive;font-size:2.6rem;letter-spacing:3px;color:#fff;text-shadow:3px 3px 0 var(--r);}
+.gallery-sub{color:#888;font-size:.95rem;max-width:560px;margin:8px auto 0;}
+.gallery-legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:18px 0 24px;}
+.gallery-legend span{display:flex;align-items:center;gap:6px;font-size:.72rem;color:#999;letter-spacing:1px;text-transform:uppercase;}
+.gallery-legend i{width:12px;height:12px;border-radius:50%;display:inline-block;}
+.gallery-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;max-width:760px;margin:0 auto;}
+.gball{position:relative;aspect-ratio:1;border-radius:50%;cursor:pointer;transition:transform .15s;display:flex;align-items:center;justify-content:center;}
+.gball:hover{transform:scale(1.18);z-index:5;}
+.gball.locked{background:#161616;border:1px solid #222;}
+.gball.locked::after{content:"?";color:#333;font-family:'Bangers',cursive;font-size:.9rem;}
+.gball.pulled{border:2px solid;}
+.gball .glo{position:absolute;top:14%;left:18%;width:30%;height:22%;background:rgba(255,255,255,.4);border-radius:50%;transform:rotate(-25deg);}
+.gball .rardot{position:absolute;bottom:-2px;right:-2px;width:9px;height:9px;border-radius:50%;border:2px solid #0a0a0a;}
+.gtip{position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#000;color:#fff;font-size:.65rem;padding:4px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;border:1px solid #333;}
+.gball:hover .gtip{opacity:1;}
+
+/* MANIFOLD WIDGET */display:flex;gap:16px;background:#161616;border:1px solid #242424;border-radius:16px;padding:16px;margin-bottom:14px;}
+.mf-preview{position:relative;flex-shrink:0;}
+.mf-preview svg{display:block;border-radius:14px;}
+.mf-live{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#5FD11A;font-family:'Boogaloo',cursive;font-size:.55rem;letter-spacing:1px;padding:3px 7px;border-radius:6px;}
+.mf-info{flex:1;min-width:0;display:flex;flex-direction:column;}
+.mf-collection{font-family:'Bangers',cursive;font-size:1.5rem;letter-spacing:2px;color:#fff;line-height:1;}
+.mf-sub{font-size:.7rem;color:#777;letter-spacing:1px;text-transform:uppercase;margin-top:3px;}
+.mf-supply{margin-top:12px;}
+.mf-supply-top{display:flex;justify-content:space-between;font-size:.68rem;color:#999;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.mf-bar{height:7px;background:#0a0a0a;border-radius:4px;overflow:hidden;}
+.mf-bar-fill{height:100%;background:linear-gradient(90deg,#E31E24,#1A56FF);border-radius:4px;transition:width .5s;}
+.mf-pricerow{display:flex;justify-content:space-between;align-items:flex-end;margin-top:13px;}
+.mf-price{display:flex;flex-direction:column;}
+.mf-eth{font-family:'Bangers',cursive;font-size:1.3rem;letter-spacing:1px;color:#fff;line-height:1;}
+.mf-usd{font-size:.7rem;color:#777;margin-top:2px;}
+.mf-net{display:flex;align-items:center;gap:5px;background:#0a2540;color:#4d9fff;font-size:.7rem;font-weight:700;padding:4px 9px;border-radius:8px;letter-spacing:.5px;}
+.mf-net-dot{width:6px;height:6px;border-radius:50%;background:#4d9fff;}
+.mf-qty{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 2px;}
+.mf-qty-label{font-size:.75rem;color:#999;letter-spacing:1px;text-transform:uppercase;}
+.mf-qty-ctrl{display:flex;align-items:center;gap:0;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden;}
+.mf-qty-ctrl button{width:38px;height:38px;background:#161616;border:none;color:#fff;font-size:1.3rem;cursor:pointer;transition:background .15s;}
+.mf-qty-ctrl button:hover{background:#242424;}
+.mf-qty-ctrl span{width:44px;text-align:center;font-family:'Bangers',cursive;font-size:1.2rem;color:#fff;}
+.mf-foot{text-align:center;font-size:.65rem;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:12px;}
+
+/* MOBILE */
+@media(max-width:600px){
+  /* NAV */
+  nav{padding:10px 16px;}
+  .logo{font-size:1.5rem;letter-spacing:2px;}
+  .logo div{font-size:.6rem;}
+  .nav-r{gap:14px;}
+  .ns-l{font-size:.55rem;letter-spacing:1px;}
+  .ns-v{font-size:1rem;}
+
+  /* MAIN */
+  main{padding-top:72px;padding-bottom:60px;}
+
+  /* CTA */
+  .cta-label{font-size:1.7rem;letter-spacing:2px;}
+  .coin{width:64px;height:64px;}
+
+  /* TICKER */
+  .ticker-wrap{margin-top:36px;}
+
+  /* EXPLAINER */
+  .ex-sect{padding:40px 16px 24px;gap:20px;}
+  .ex-sect h2{font-size:2rem;letter-spacing:3px;}
+  .ex-grid{flex-direction:column;align-items:stretch;}
+  .ex-card{max-width:100%;min-width:unset;flex-direction:row;align-items:flex-start;gap:14px;padding:16px;}
+  .ex-n{font-size:2rem;min-width:36px;}
+
+  /* CARDS + GAME */
+  .cg-sect{padding:0 16px 48px;flex-direction:column;align-items:center;gap:32px;}
+  .card-stack{margin:0 auto;}
+  .gb-wrap{min-width:unset;width:100%;}
+  .gb-wrap h2{font-size:1.7rem;}
+  .gbox{padding:16px 18px;}
+  .gbox p{font-size:.95rem;}
+
+  /* FOOTER STATS */
+  .foot{gap:24px;flex-wrap:wrap;justify-content:center;padding:20px 16px 0;}
+  .fv{font-size:1.6rem;}
+  .fl{font-size:.6rem;}
+  /* GALLERY */
+  .gallery-sect{padding:36px 16px 16px;}
+  .gallery-sect h2{font-size:2rem;}
+  .gallery-grid{grid-template-columns:repeat(8,1fr);gap:6px;}
+  .gallery-legend{gap:12px;}
+
+  /* MODALS */
+  .modal{border-radius:16px;}
+  .mh{padding:14px 18px;}
+  .mh h2{font-size:1.4rem;letter-spacing:2px;}
+  .mb{padding:20px 18px;}
+  .mbtn{font-size:1.25rem;padding:14px;}
+}
+
+@keyframes mshake{0%{transform:translateX(0)}10%{transform:translateX(-6px) rotate(-1deg)}20%{transform:translateX(8px) rotate(1.5deg)}30%{transform:translateX(-8px) rotate(-2deg)}40%{transform:translateX(10px) rotate(1deg)}50%{transform:translateX(-6px) rotate(-1.5deg)}60%{transform:translateX(8px) rotate(2deg)}70%{transform:translateX(-5px) rotate(-1deg)}80%{transform:translateX(6px) rotate(1deg)}90%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+.machine-wrap.shake{animation:mshake .55s cubic-bezier(.36,.07,.19,.97) both;}
+
+/* EASTER EGG FACE */
+.ee-face{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);z-index:10;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+.ee-face.visible{transform:translate(-50%,-50%) scale(1);}
+.ee-tap-hint{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:.45rem;letter-spacing:2px;color:rgba(255,255,255,.15);text-transform:uppercase;z-index:3;pointer-events:none;transition:opacity .4s;}
+
+.coin-cta{display:flex;flex-direction:column;align-items:center;margin-top:28px;gap:4px;cursor:pointer;}
+.arrow{font-size:2.2rem;color:var(--r);animation:abounce .65s ease-in-out infinite alternate;text-shadow:0 0 14px rgba(227,30,36,.7);}
+@keyframes abounce{0%{transform:translateY(0);opacity:.6}100%{transform:translateY(-10px);opacity:1}}
+.coin{width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe066,#cc9900);border:3px solid #ffcc00;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Bangers',cursive;font-size:.9rem;letter-spacing:1px;color:#886600;line-height:1.2;animation:cglow 1.8s ease-in-out infinite;user-select:none;transition:transform .1s;}
+.coin:hover{transform:scale(1.08);}
+.coin:active{transform:scale(.95);}
+@keyframes cglow{0%,100%{box-shadow:0 0 0 4px rgba(255,200,0,.15),0 0 20px rgba(255,200,0,.4),0 4px 0 #886600}50%{box-shadow:0 0 0 10px rgba(255,200,0,.08),0 0 44px rgba(255,200,0,.75),0 4px 0 #886600}}
+.coin.inserted{animation:cinsert .5s ease-in forwards;}
+@keyframes cinsert{0%{transform:translateY(0);opacity:1}40%{transform:translateY(-14px);opacity:1}100%{transform:translateY(-130px);opacity:0}}
+.cta-label{font-family:'Bangers',cursive;font-size:2.4rem;letter-spacing:4px;color:#fff;text-shadow:3px 3px 0 var(--r);margin-top:8px;text-align:center;}
+
+/* TICKER */
+.ticker-wrap{width:100%;max-width:680px;margin-top:56px;overflow:hidden;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;padding:10px 0;position:relative;}
+.t-fl{position:absolute;left:0;top:0;bottom:0;width:80px;background:linear-gradient(90deg,var(--k) 60%,transparent);z-index:2;display:flex;align-items:center;padding-left:12px;font-size:.7rem;color:#666;letter-spacing:2px;text-transform:uppercase;}
+.t-fr{position:absolute;right:0;top:0;bottom:0;width:60px;background:linear-gradient(270deg,var(--k) 60%,transparent);z-index:2;}
+.ticker{display:flex;gap:32px;padding-left:100px;animation:scroll 22s linear infinite;white-space:nowrap;}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{display:flex;align-items:center;gap:8px;font-size:.85rem;color:#555;}
+.td{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.ti strong{color:#aaa;font-weight:normal;}
+
+/* WHAT IS THIS */
+.ex-sect{width:100%;max-width:680px;padding:56px 32px 32px;display:flex;flex-direction:column;align-items:center;gap:28px;}
+.ex-sect h2{font-family:'Bangers',cursive;font-size:2.6rem;letter-spacing:4px;color:#fff;text-align:center;text-shadow:3px 3px 0 var(--r);}
+.ex-grid{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;width:100%;}
+.ex-card{flex:1;min-width:175px;max-width:200px;background:#111;border:2px solid #1a1a1a;border-radius:12px;padding:20px 16px;display:flex;flex-direction:column;gap:8px;}
+.ex-n{font-family:'Bangers',cursive;font-size:2.6rem;color:var(--r);line-height:1;}
+.ex-t{font-family:'Bangers',cursive;font-size:1.3rem;letter-spacing:2px;color:#fff;}
+.ex-b{font-size:.95rem;color:#777;line-height:1.5;}
+
+/* CARDS + GAME */
+.cg-sect{width:100%;max-width:720px;padding:0 32px 56px;display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+
+/* CARD STACK */
+.card-stack{position:relative;width:200px;height:340px;flex-shrink:0;cursor:pointer;}
+.sc{position:absolute;width:190px;border-radius:14px;overflow:hidden;transition:transform .4s cubic-bezier(.34,1.56,.64,1);}
+.sc:nth-child(3){top:20px;left:20px;transform:rotate(9deg);border:2px solid var(--b);background:linear-gradient(160deg,#00002a,#00001a);box-shadow:0 8px 24px rgba(26,26,255,.3);z-index:1;}
+.sc:nth-child(2){top:10px;left:10px;transform:rotate(4deg);border:2px solid #888;background:linear-gradient(160deg,#1a1a1a,#111);z-index:2;}
+.sc:nth-child(1){top:0;left:0;transform:rotate(0);border:2px solid var(--r);background:linear-gradient(160deg,#2a0000,#1a0000);box-shadow:0 12px 40px rgba(227,30,36,.4);z-index:3;}
+.card-stack:hover .sc:nth-child(3){transform:rotate(14deg) translateX(10px);}
+.card-stack:hover .sc:nth-child(2){transform:rotate(6deg) translateX(5px);}
+.card-stack:hover .sc:nth-child(1){transform:rotate(-2deg) translateY(-10px);box-shadow:0 20px 60px rgba(227,30,36,.5);}
+.sc-top{display:flex;justify-content:space-between;padding:8px 10px 4px;font-size:.7rem;color:#555;}
+.sc-rar{font-family:'Bangers',cursive;font-size:.8rem;padding:1px 8px;border-radius:10px;letter-spacing:1px;}
+.sc-rar.leg{background:linear-gradient(90deg,var(--r),#ff8c00);color:#fff;}
+.sc-rar.epc{background:#7b00ff;color:#fff;}
+.sc-rar.rar{background:var(--b);color:#fff;}
+.sc-art{display:flex;justify-content:center;padding:4px 12px 2px;}
+.sc-name{font-family:'Bangers',cursive;font-size:1.1rem;letter-spacing:2px;text-align:center;margin:4px 8px;padding:3px 8px;border-radius:4px;color:#fff;}
+.rn{background:var(--r)}.bn{background:var(--b)}.wn{background:#555}
+.sc-stats{margin:4px 8px 10px;border-radius:6px;overflow:hidden;}
+.sc-stats.rb{border:1px solid #2a0000;}.sc-stats.bb{border:1px solid #00002a;}.sc-stats.wb{border:1px solid #222;}
+.sr{display:flex;align-items:center;gap:6px;padding:3px 8px;}
+.sc-stats.rb .sr{border-bottom:1px solid #1a0000}
+.sc-stats.bb .sr{border-bottom:1px solid #00001a}
+.sc-stats.wb .sr{border-bottom:1px solid #1a1a1a}
+.sr:last-child{border-bottom:none!important}
+.sl{font-size:.58rem;color:#555;text-transform:uppercase;letter-spacing:.5px;width:62px;flex-shrink:0;}
+.sbg{flex:1;height:4px;background:#111;border-radius:2px;overflow:hidden;}
+.sf{height:100%;border-radius:2px;}
+.rf{background:linear-gradient(90deg,var(--r),#ff6060)}.bf{background:linear-gradient(90deg,var(--b),#6060ff)}.wf{background:linear-gradient(90deg,#888,#ccc)}
+.sv{font-size:.65rem;font-family:'Bangers',cursive;color:#fff;width:12px;text-align:right;}
+
+/* GAME BOX */
+.gb-wrap{flex:1;min-width:260px;display:flex;flex-direction:column;gap:16px;padding-top:8px;}
+.gb-wrap h2{font-family:'Bangers',cursive;font-size:2rem;letter-spacing:4px;color:#fff;text-shadow:3px 3px 0 var(--b);}
+.gbox{background:#0f0f0f;border:2px solid #1a1a1a;border-left:4px solid var(--b);border-radius:12px;padding:22px 24px;}
+.gbox p{font-size:1rem;color:#777;line-height:1.7;}
+.gbox p strong{color:#bbb;}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.pill{font-family:'Bangers',cursive;font-size:.9rem;letter-spacing:1px;padding:5px 14px;border-radius:20px;background:var(--r);color:#fff;}
+
+/* FOOTER */
+.foot{display:flex;gap:48px;padding-top:28px;border-top:1px solid #1a1a1a;}
+.fs{text-align:center;}
+.fv{font-family:'Bangers',cursive;font-size:2rem;letter-spacing:2px;display:block;}
+.fl{font-size:.7rem;color:#666;letter-spacing:2px;text-transform:uppercase;margin-top:2px;display:block;}
+.rv{color:var(--r)}.bv{color:var(--b)}.wv{color:#777}
+
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.overlay.active{display:flex;}
+.modal{background:#0f0f0f;border-radius:20px;width:92%;max-width:430px;overflow:hidden;animation:min .35s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes min{0%{opacity:0;transform:scale(.75) translateY(40px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.mh{background:var(--r);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;}
+.mh h2{font-family:'Bangers',cursive;font-size:1.7rem;letter-spacing:3px;color:#fff;}
+.mh.blue{background:linear-gradient(90deg,var(--r),#c01000);}
+.mcl{background:rgba(0,0,0,.3);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0;}
+.mcl:hover{background:rgba(0,0,0,.6);}
+.mb{padding:28px 24px;}
+.msteps{display:flex;flex-direction:column;gap:18px;margin-bottom:24px;}
+.mstep{display:flex;align-items:flex-start;gap:14px;}
+.mnum{width:32px;height:32px;border-radius:50%;background:var(--r);font-family:'Bangers',cursive;font-size:1.1rem;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.mst h3{font-family:'Bangers',cursive;font-size:1.15rem;letter-spacing:1px;color:#fff;margin-bottom:3px;}
+.mst p{font-size:.9rem;color:#777;line-height:1.4;}
+.tnote{background:#111;border:1px solid #1e1e1e;border-left:3px solid var(--b);border-radius:8px;padding:14px 16px;font-size:.9rem;color:#666;line-height:1.5;margin-bottom:24px;}
+.tnote strong{color:#bbb;}
+.mbtn{width:100%;font-family:'Bangers',cursive;font-size:1.5rem;letter-spacing:3px;padding:16px;border-radius:12px;border:none;cursor:pointer;transition:all .2s;}
+.mbtn.p{background:var(--r);color:#fff;box-shadow:0 5px 0 #8a0a0a;position:relative;top:0;}
+.mbtn.p:hover{background:#ff2a30;}
+.mbtn.p:active{top:3px;box-shadow:0 2px 0 #8a0a0a;}
+.mbtn.s{background:transparent;color:#666;border:2px solid #222;font-size:1rem;margin-top:10px;letter-spacing:2px;}
+.mbtn.s:hover{border-color:#333;color:#999;}
+.mbtn.bl{background:var(--b);color:#fff;box-shadow:0 5px 0 #0a0a8a;position:relative;top:0;}
+.mbtn.bl:hover{background:#2a2aff;}
+.wrow{display:flex;align-items:center;gap:10px;margin-bottom:20px;background:#111;border:1px solid #1a1a1a;border-radius:8px;padding:12px 16px;}
+.wdg{width:9px;height:9px;border-radius:50%;background:#0c6;animation:pulse 2s infinite;flex-shrink:0;}
+.waddr{font-size:.9rem;color:#777;letter-spacing:1px;}
+.waddr strong{color:#bbb;}
+.psum{background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:20px;margin-bottom:24px;}
+.pr{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #1a1a1a;font-size:.9rem;}
+.pr:last-child{border-bottom:none;}
+.pl{color:#666;letter-spacing:1px;}
+.pv{color:#fff;font-family:'Bangers',cursive;letter-spacing:1px;font-size:1.05rem;}
+.pv.g{color:#0c6}.pv.go{color:#fc0;font-size:1.3rem;}
+.mscreen{display:flex;flex-direction:column;align-items:center;gap:20px;padding:8px 0;}
+.mlbl{font-family:'Bangers',cursive;font-size:1.5rem;letter-spacing:3px;color:#fff;text-align:center;}
+.msub{font-size:.9rem;color:#555;letter-spacing:1px;text-transform:uppercase;text-align:center;line-height:1.7;}
+.sring{width:88px;height:88px;border-radius:50%;border:4px solid #1a1a1a;display:flex;align-items:center;justify-content:center;position:relative;}
+.sring::before{content:'';position:absolute;inset:4px;border-radius:50%;border:3px solid transparent;border-top-color:var(--r);animation:spin .7s linear infinite;}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.sinner{width:44px;height:44px;border-radius:50%;background:var(--r);box-shadow:0 0 16px rgba(227,30,36,.5);animation:ipulse 1s ease-in-out infinite alternate;}
+@keyframes ipulse{0%{transform:scale(.88);opacity:.8}100%{transform:scale(1.1);opacity:1}}
+.pgwrap{width:100%;background:#111;border-radius:20px;height:10px;overflow:hidden;border:1px solid #1a1a1a;}
+.pgbar{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--r),#ff6060);width:0%;transition:width .6s ease;}
+.pgsteps{display:flex;flex-direction:column;gap:10px;width:100%;}
+.pgs{display:flex;align-items:center;gap:12px;font-size:.9rem;color:#666;transition:color .3s;}
+.pgs.done{color:#555}.pgs.active{color:var(--r)}
+.pi{width:20px;height:20px;border-radius:50%;border:2px solid #222;display:flex;align-items:center;justify-content:center;font-size:.65rem;flex-shrink:0;transition:all .3s;}
+.pgs.done .pi{background:#222;border-color:#333;color:#666;}
+.pgs.active .pi{background:var(--r);border-color:var(--r);color:#fff;animation:pulse 1s infinite;}
+.rcard{width:186px;border-radius:14px;overflow:hidden;border:2px solid var(--r);background:linear-gradient(160deg,#2a0000,#1a0000);box-shadow:0 16px 50px rgba(227,30,36,.5);}
+.rcardwrap{display:flex;justify-content:center;margin-bottom:20px;animation:cpop .6s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes cpop{0%{opacity:0;transform:scale(.4) rotate(-12deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+.rtop{display:flex;justify-content:space-between;padding:8px 10px 4px;font-size:.7rem;color:#555;}
+.rrar{font-family:'Bangers',cursive;font-size:.85rem;padding:2px 8px;border-radius:10px;background:linear-gradient(90deg,var(--r),#ff8c00);color:#fff;letter-spacing:1px;}
+.rname{font-family:'Bangers',cursive;font-size:1.15rem;letter-spacing:2px;text-align:center;background:var(--r);margin:4px 8px;padding:4px 8px;border-radius:4px;color:#fff;}
+.rstats{margin:4px 8px 8px;border-radius:6px;overflow:hidden;border:1px solid #2a0000;}
+.rsr{display:flex;align-items:center;gap:6px;padding:4px 8px;border-bottom:1px solid #1a0000;}
+.rsr:last-child{border-bottom:none;}
+.rsl{font-size:.62rem;color:#555;text-transform:uppercase;letter-spacing:.5px;width:66px;flex-shrink:0;}
+.rsbg{flex:1;height:5px;background:#1a1a1a;border-radius:3px;overflow:hidden;}
+.rsf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--r),#ff6060);animation:barin 1.2s ease both;}
+@keyframes barin{from{width:0%}}
+.rsv{font-size:.72rem;font-family:'Bangers',cursive;color:#fff;width:14px;text-align:right;}
+.rtx{text-align:center;font-size:.8rem;color:#666;margin-bottom:20px;letter-spacing:1px;line-height:1.8;}
+.rtx span{color:#555;}
+.rbtns{display:flex;flex-direction:column;gap:8px;}
+.sbtn{width:100%;font-family:'Boogaloo',cursive;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;padding:11px;border-radius:8px;border:1px solid #1a1a1a;background:transparent;color:#555;cursor:pointer;transition:all .2s;}
+.sbtn:hover{border-color:#333;color:#888;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">STREET <span>SPLATZ</span><div style="font-family:'Boogaloo',cursive;font-size:.7rem;letter-spacing:3px;color:var(--b);text-transform:uppercase;text-shadow:none;margin-top:-4px;">Wild flavor drops</div></div>
+  <div class="nav-r">
+    <div><span class="ns-l">Pulls</span><span class="ns-v">1,247</span></div>
+    <div><span class="ns-l">The Pull</span><span class="ns-v">~$0.50</span></div>
+    <div class="wcon" id="walletNav"><div class="wdot"></div><span>0x3f...a21</span></div>
+  </div>
+</nav>
+
+<main>
+
+
+
+  <!-- MACHINE -->
+  <div class="machine-wrap">
+    <div class="m-cap"><div class="m-knob"></div></div>
+    <div class="m-glass">
+      <div class="m-glass-label">STREET SPLATZ</div>
+      <div class="gb-grid" id="gbGrid"></div>
+      <div class="m-shine"></div><div class="m-shine-r"></div>
+      <div class="ee-face" id="eeFace">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle cx="45" cy="45" r="42" fill="#e31e24" stroke="#ff4444" stroke-width="2"/>
+          <ellipse cx="31" cy="30" rx="8" ry="5" fill="rgba(255,255,255,.2)" transform="rotate(-20 31 30)"/>
+          <!-- wide eyes pressed against glass - squished flat -->
+          <ellipse cx="30" cy="44" rx="11" ry="7" fill="#111"/>
+          <ellipse cx="60" cy="44" rx="11" ry="7" fill="#111"/>
+          <ellipse cx="27" cy="42" rx="4" ry="3" fill="white"/>
+          <ellipse cx="57" cy="42" rx="4" ry="3" fill="white"/>
+          <ellipse cx="28" cy="42" rx="2" ry="2" fill="#111"/>
+          <ellipse cx="58" cy="42" rx="2" ry="2" fill="#111"/>
+          <!-- nose squished flat -->
+          <ellipse cx="45" cy="52" rx="4" ry="2" fill="#b01818"/>
+          <!-- mouth open wide -->
+          <path d="M24 64 Q45 80 66 64" stroke="#111" stroke-width="3" fill="#cc0000" stroke-linecap="round"/>
+          <!-- tiny teeth -->
+          <rect x="32" y="64" width="6" height="5" rx="1" fill="white"/>
+          <rect x="40" y="65" width="6" height="6" rx="1" fill="white"/>
+          <rect x="48" y="65" width="6" height="6" rx="1" fill="white"/>
+          <rect x="56" y="64" width="6" height="5" rx="1" fill="white"/>
+          <!-- breath fog on glass -->
+          <ellipse cx="45" cy="88" rx="28" ry="4" fill="rgba(255,255,255,.06)"/>
+        </svg>
+      </div>
+      <div class="ee-tap-hint" id="eeTapHint">tap the glass</div>
+    </div>
+    <div class="m-collar"></div>
+    <div class="m-base">
+      <div class="m-mech">
+        <div class="m-slot"></div>
+        <div class="m-handle"><div class="m-indent" id="mIndent"></div></div>
+        <div class="m-badge">SS</div>
+      </div>
+    </div>
+    <div class="m-chute-wrap"><div class="m-chute"><div class="dgb" id="dgb"></div></div></div>
+    <div class="m-plate"></div>
+  </div>
+
+  <!-- COIN CTA -->
+  <div class="coin-cta" id="coinCta" onclick="startFlow()">
+    <div class="arrow">▲</div>
+    <div class="coin" id="ctaCoin"></div>
+    <span class="cta-label">Drop a Coin. Pull 1 of 100.</span>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="t-fl">Fresh Drops</div><div class="t-fr"></div>
+    <div class="ticker">
+      <div class="ti"><div class="td" style="background:#e31e24"></div><strong>Cherry Boss</strong><span>&nbsp;Street Legend · Wild Pull · 0x3f...a21</span></div>
+      <div class="ti"><div class="td" style="background:#1a1aff"></div><strong>Blueberry Cool</strong><span>&nbsp;Fresh Drop · The Peel · 0x9b...c44</span></div>
+      <div class="ti"><div class="td" style="background:#f0f0f0"></div><strong>Vanilla Star</strong><span>&nbsp;Block Hitter · Full Juice · 0x7d...e88</span></div>
+      <div class="ti"><div class="td" style="background:#333"></div><strong>Licorice Drop</strong><span>&nbsp;Pavement Card · Fresh Drop · 0x1a...b99</span></div>
+      <div class="ti"><div class="td" style="background:#e31e24"></div><strong>Cherry Boss</strong><span>&nbsp;Block Hitter · The Peel · 0x5c...f12</span></div>
+      <div class="ti"><div class="td" style="background:#1a1aff"></div><strong>Blueberry Cool</strong><span>&nbsp;Pavement Card · Fresh Drop · 0x2e...d77</span></div>
+      <div class="ti"><div class="td" style="background:#e31e24"></div><strong>Cherry Boss</strong><span>&nbsp;Street Legend · Wild Pull · 0x3f...a21</span></div>
+      <div class="ti"><div class="td" style="background:#1a1aff"></div><strong>Blueberry Cool</strong><span>&nbsp;Fresh Drop · The Peel · 0x9b...c44</span></div>
+      <div class="ti"><div class="td" style="background:#f0f0f0"></div><strong>Vanilla Star</strong><span>&nbsp;Block Hitter · Full Juice · 0x7d...e88</span></div>
+      <div class="ti"><div class="td" style="background:#333"></div><strong>Licorice Drop</strong><span>&nbsp;Pavement Card · Fresh Drop · 0x1a...b99</span></div>
+      <div class="ti"><div class="td" style="background:#e31e24"></div><strong>Cherry Boss</strong><span>&nbsp;Block Hitter · The Peel · 0x5c...f12</span></div>
+      <div class="ti"><div class="td" style="background:#1a1aff"></div><strong>Blueberry Cool</strong><span>&nbsp;Pavement Card · Fresh Drop · 0x2e...d77</span></div>
+    </div>
+  </div>
+
+  <!-- WHAT IS THIS -->
+  <div class="ex-sect">
+    <h2>100 SPLATZ. THAT IS IT.</h2>
+    <div class="ex-grid">
+      <div class="ex-card"><span class="ex-n">01</span><span class="ex-t">Drop a Coin</span><p class="ex-b">Put in about 50 cents worth of ETH. Less than a real gumball machine. The handle does the rest.</p></div>
+      <div class="ex-card"><span class="ex-n">02</span><span class="ex-t">Pull a Splatz</span><p class="ex-b">One of 100 drops to your wallet. You never know which until The Peel. Four Street Legends hide in the glass.</p></div>
+      <div class="ex-card"><span class="ex-n">03</span><span class="ex-t">Own the Block</span><p class="ex-b">Your Splatz is yours on Base, forever. Only 100 will ever exist. When they are gone, they are gone.</p></div>
+    </div>
+  </div>
+
+  <!-- CARDS + GAME -->
+  <div class="cg-sect">
+
+    <div class="card-stack">
+      <!-- back: blue -->
+      <div class="sc">
+        <div class="sc-top"><span>#0247</span><span class="sc-rar rar">RARE</span></div>
+        <div class="sc-art">
+          <svg width="150" height="108" viewBox="0 0 150 108">
+            <rect width="150" height="108" fill="#00001a"/>
+            <circle cx="75" cy="56" r="40" fill="#1a1aff"/>
+            <ellipse cx="59" cy="37" rx="10" ry="6" fill="rgba(255,255,255,.18)" transform="rotate(-25 59 37)"/>
+            <line x1="36" y1="63" x2="22" y2="81" stroke="#1010cc" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="21" cy="83" r="6" fill="#1010cc"/>
+            <line x1="114" y1="63" x2="128" y2="81" stroke="#1010cc" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="129" cy="83" r="6" fill="#1010cc"/>
+            <line x1="62" y1="93" x2="53" y2="104" stroke="#1010cc" stroke-width="8" stroke-linecap="round"/>
+            <line x1="88" y1="93" x2="97" y2="104" stroke="#1010cc" stroke-width="8" stroke-linecap="round"/>
+            <path d="M54 71 Q54 63 61 63 Q68 63 68 71 Q68 79 61 84 Q54 79 54 71Z" fill="#e31e24"/>
+            <path d="M82 71 Q82 63 89 63 Q96 63 96 71 Q96 79 89 84 Q82 79 82 71Z" fill="#e31e24"/>
+            <path d="M58 90 Q75 100 92 90" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="sc-name bn">BLUEBERRY COOL</div>
+        <div class="sc-stats bb">
+          <div class="sr"><span class="sl">Jaw Smash</span><div class="sbg"><div class="sf bf" style="width:40%"></div></div><span class="sv">4</span></div>
+          <div class="sr"><span class="sl">Sugar Bomb</span><div class="sbg"><div class="sf bf" style="width:50%"></div></div><span class="sv">5</span></div>
+          <div class="sr"><span class="sl">Pucker Blast</span><div class="sbg"><div class="sf bf" style="width:30%"></div></div><span class="sv">3</span></div>
+          <div class="sr"><span class="sl">Flavor Drip</span><div class="sbg"><div class="sf bf" style="width:60%"></div></div><span class="sv">6</span></div>
+          <div class="sr"><span class="sl">Gutter Splat</span><div class="sbg"><div class="sf bf" style="width:80%"></div></div><span class="sv">8</span></div>
+        </div>
+      </div>
+      <!-- mid: white -->
+      <div class="sc">
+        <div class="sc-top"><span>#0089</span><span class="sc-rar epc">EPIC</span></div>
+        <div class="sc-art">
+          <svg width="150" height="108" viewBox="0 0 150 108">
+            <rect width="150" height="108" fill="#0f0f0f"/>
+            <circle cx="75" cy="56" r="40" fill="#f0f0f0"/>
+            <ellipse cx="59" cy="37" rx="10" ry="6" fill="rgba(255,255,255,.6)" transform="rotate(-25 59 37)"/>
+            <line x1="36" y1="62" x2="22" y2="44" stroke="#bbb" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="21" cy="42" r="6" fill="#bbb"/>
+            <line x1="114" y1="76" x2="128" y2="90" stroke="#bbb" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="129" cy="92" r="6" fill="#bbb"/>
+            <line x1="62" y1="93" x2="53" y2="104" stroke="#bbb" stroke-width="8" stroke-linecap="round"/>
+            <line x1="88" y1="93" x2="97" y2="104" stroke="#bbb" stroke-width="8" stroke-linecap="round"/>
+            <polygon points="67,75 70,67 73,75 81,75 75,80 77,88 70,83 63,88 65,80 59,75" fill="#e31e24"/>
+            <polygon points="91,75 94,67 97,75 105,75 99,80 101,88 94,83 87,88 89,80 83,75" fill="#e31e24"/>
+            <path d="M53 95 Q75 108 97 95" stroke="#333" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="sc-name wn">VANILLA STAR</div>
+        <div class="sc-stats wb">
+          <div class="sr"><span class="sl">Jaw Smash</span><div class="sbg"><div class="sf wf" style="width:70%"></div></div><span class="sv">7</span></div>
+          <div class="sr"><span class="sl">Sugar Bomb</span><div class="sbg"><div class="sf wf" style="width:60%"></div></div><span class="sv">6</span></div>
+          <div class="sr"><span class="sl">Pucker Blast</span><div class="sbg"><div class="sf wf" style="width:10%"></div></div><span class="sv">1</span></div>
+          <div class="sr"><span class="sl">Flavor Drip</span><div class="sbg"><div class="sf wf" style="width:100%"></div></div><span class="sv">10</span></div>
+          <div class="sr"><span class="sl">Gutter Splat</span><div class="sbg"><div class="sf wf" style="width:90%"></div></div><span class="sv">9</span></div>
+        </div>
+      </div>
+      <!-- front: red -->
+      <div class="sc">
+        <div class="sc-top"><span>#0001</span><span class="sc-rar leg">LEGENDARY</span></div>
+        <div class="sc-art">
+          <svg width="150" height="108" viewBox="0 0 150 108">
+            <rect width="150" height="108" fill="#1a0000"/>
+            <circle cx="75" cy="56" r="40" fill="#e31e24"/>
+            <ellipse cx="59" cy="37" rx="10" ry="6" fill="rgba(255,255,255,.22)" transform="rotate(-25 59 37)"/>
+            <line x1="36" y1="63" x2="22" y2="83" stroke="#b01818" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="21" cy="85" r="6" fill="#b01818"/>
+            <line x1="114" y1="55" x2="128" y2="36" stroke="#b01818" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="129" cy="34" r="6" fill="#b01818"/>
+            <line x1="62" y1="93" x2="53" y2="104" stroke="#b01818" stroke-width="8" stroke-linecap="round"/>
+            <line x1="88" y1="93" x2="97" y2="104" stroke="#b01818" stroke-width="8" stroke-linecap="round"/>
+            <rect x="48" y="48" width="21" height="13" rx="6" fill="#111"/>
+            <rect x="79" y="48" width="21" height="13" rx="6" fill="#111"/>
+            <line x1="69" y1="54" x2="79" y2="54" stroke="#111" stroke-width="2.5"/>
+            <path d="M54 77 Q75 90 96 77" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <rect x="67" y="78" width="7" height="6" rx="2" fill="white"/>
+            <rect x="76" y="78" width="7" height="6" rx="2" fill="white"/>
+          </svg>
+        </div>
+        <div class="sc-name rn">CHERRY BOSS</div>
+        <div class="sc-stats rb">
+          <div class="sr"><span class="sl">Jaw Smash</span><div class="sbg"><div class="sf rf" style="width:90%"></div></div><span class="sv">9</span></div>
+          <div class="sr"><span class="sl">Sugar Bomb</span><div class="sbg"><div class="sf rf" style="width:100%"></div></div><span class="sv">10</span></div>
+          <div class="sr"><span class="sl">Pucker Blast</span><div class="sbg"><div class="sf rf" style="width:20%"></div></div><span class="sv">2</span></div>
+          <div class="sr"><span class="sl">Flavor Drip</span><div class="sbg"><div class="sf rf" style="width:80%"></div></div><span class="sv">8</span></div>
+          <div class="sr"><span class="sl">Gutter Splat</span><div class="sbg"><div class="sf rf" style="width:70%"></div></div><span class="sv">7</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME -->
+    <div class="gb-wrap">
+      <h2>THE GAME IS COMING</h2>
+      <div class="gbox">
+        <p>Every Splatz carries five stats, from first bite to the pavement. Those stats are not decoration. They are the foundation of the Street Splatz card battle game, landing after the Genesis 100 sell out.</p>
+        <p style="margin-top:12px;">Call your stat. Highest juice wins the Splat. First to three Rules the Block. Genesis holders get in before anyone else. <strong>Pull now to hold a founding Splatz.</strong></p>
+        <div class="pills">
+          <span class="pill">Jaw Smash</span>
+          <span class="pill">Sugar Bomb</span>
+          <span class="pill">Pucker Blast</span>
+          <span class="pill">Flavor Drip</span>
+          <span class="pill">Gutter Splat</span>
+        </div>
+        <div class="roadmap-tag">Genesis Drop → Sell Out → The Game</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COLLECTION GALLERY -->
+  <div class="gallery-sect">
+    <h2>THE FULL GLASS</h2>
+    <p class="gallery-sub">All 100 Genesis Splatz. Pulled ones are revealed. The rest are still in the machine.</p>
+    <div class="gallery-legend">
+      <span><i style="background:linear-gradient(135deg,#FFD200,#FF7A00)"></i>Street Legend ×4</span>
+      <span><i style="background:linear-gradient(135deg,#B14BFF,#6A1FE0)"></i>Block Hitter ×23</span>
+      <span><i style="background:linear-gradient(135deg,#33C2FF,#1A56FF)"></i>Fresh Drop ×55</span>
+      <span><i style="background:linear-gradient(135deg,#9AA0A6,#5F6368)"></i>Pavement ×18</span>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="foot">
+    <div class="fs"><span class="fv rv" id="footPulled">47</span><span class="fl">Pulled</span></div>
+    <div class="fs"><span class="fv bv">100</span><span class="fl">Total Supply</span></div>
+    <div class="fs"><span class="fv rv">4</span><span class="fl">Legends</span></div>
+    <div class="fs"><span class="fv wv">Base</span><span class="fl">Network</span></div>
+  </div>
+
+</main>
+
+<footer style="position:relative;z-index:1;text-align:center;padding:24px 32px;border-top:1px solid #141414;">
+  <p style="font-family:'Boogaloo',cursive;font-size:.8rem;color:#555;letter-spacing:2px;text-transform:uppercase;">&copy; 2025 Street Splatz. All rights reserved. Built on Base Network.</p>
+</footer>
+
+<!-- MODAL 1 -->
+<div class="overlay" id="ovEx">
+  <div class="modal">
+    <div class="mh"><h2>PULL A SPLATZ</h2><button class="mcl" onclick="closeAll()">✕</button></div>
+    <div class="mb">
+
+      <!-- ============================================================
+           MANIFOLD WIDGET ZONE
+           In production this whole block is replaced by Manifold's
+           embed. You paste these two lines from your Manifold dashboard:
+
+           <script src="https://connect.manifoldxyz.dev/2.x/connect.js"></script>
+           <div data-widget="m-mint-button"
+                data-instance-id="YOUR_CLAIM_ID"
+                data-network="8453"></div>
+
+           Everything below is a styled preview of how that widget looks
+           wearing the Street Splatz brand. Manifold lets you theme it.
+      ============================================================ -->
+      <div class="mf-widget">
+
+        <!-- preview -->
+        <div class="mf-preview">
+          <svg width="118" height="118" viewBox="0 0 118 118">
+            <rect width="118" height="118" rx="14" fill="#1a0000"/>
+            <circle cx="59" cy="58" r="38" fill="#e31e24" stroke="#111" stroke-width="3"/>
+            <ellipse cx="46" cy="42" rx="9" ry="5" fill="#fff" opacity=".28" transform="rotate(-25 46 42)"/>
+            <rect x="34" y="50" width="20" height="13" rx="6" fill="#111"/>
+            <rect x="64" y="50" width="20" height="13" rx="6" fill="#111"/>
+            <rect x="52" y="55" width="14" height="4" fill="#111"/>
+            <path d="M40 74 Q59 90 78 74 Z" fill="#fff" stroke="#111" stroke-width="2.5"/>
+          </svg>
+          <div class="mf-live">● LIVE</div>
+        </div>
+
+        <!-- info -->
+        <div class="mf-info">
+          <div class="mf-collection">Street Splatz</div>
+          <div class="mf-sub">Genesis Drop · 100 total</div>
+
+          <div class="mf-supply">
+            <div class="mf-supply-top"><span id="mfCount">47 of 100 pulled</span><span>53 left</span></div>
+            <div class="mf-bar"><div class="mf-bar-fill" id="mfBar" style="width:47%"></div></div>
+          </div>
+
+          <div class="mf-pricerow">
+            <div class="mf-price"><span class="mf-eth">0.0002 ETH</span><span class="mf-usd">~$0.50</span></div>
+            <div class="mf-net"><span class="mf-net-dot"></span>Base</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- quantity -->
+      <div class="mf-qty">
+        <span class="mf-qty-label">Quantity</span>
+        <div class="mf-qty-ctrl">
+          <button onclick="mfQty(-1)">–</button>
+          <span id="mfQtyVal">1</span>
+          <button onclick="mfQty(1)">+</button>
+        </div>
+      </div>
+
+      <button class="mbtn p" onclick="showPayment()">CONNECT WALLET</button>
+      <div class="mf-foot">Crypto wallet required · Powered by Manifold on Base</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2 -->
+<div class="overlay" id="ovPay">
+  <div class="modal">
+    <div class="mh"><h2>APPROVE IN WALLET</h2><button class="mcl" onclick="closeAll()">✕</button></div>
+    <div class="mb">
+      <div class="wrow"><div class="wdg"></div><div class="waddr">Wallet connected &nbsp;<strong>0x3f...a21</strong></div></div>
+      <div class="psum">
+        <div class="pr"><span class="pl">The Pull</span><span class="pv">1 Splatz</span></div>
+        <div class="pr"><span class="pl">Network</span><span class="pv">Base</span></div>
+        <div class="pr"><span class="pl">Gas</span><span class="pv g">~$0.02</span></div>
+        <div class="pr"><span class="pl">Total</span><span class="pv go">~$0.52 in ETH</span></div>
+      </div>
+      <button class="mbtn p" onclick="startMinting()">DROP THE COIN</button>
+      <button class="mbtn s" onclick="closeAll()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 3 -->
+<div class="overlay" id="ovMint">
+  <div class="modal">
+    <div class="mh"><h2>THE MACHINE IS CRANKING</h2><button class="mcl" style="opacity:0;pointer-events:none;">✕</button></div>
+    <div class="mb">
+      <div class="mscreen">
+        <div class="sring"><div class="sinner"></div></div>
+        <div class="mlbl" id="mlbl">Splat confirmed on Base</div>
+        <div class="msub">Hang tight. Your Splatz is being<br>generated and sent to your wallet.</div>
+        <div class="pgwrap"><div class="pgbar" id="pgbar"></div></div>
+        <div class="pgsteps">
+          <div class="pgs active" id="ps1"><div class="pi">●</div><span>Transaction confirmed on Base</span></div>
+          <div class="pgs" id="ps2"><div class="pi">○</div><span>Generating your Splatz</span></div>
+          <div class="pgs" id="ps3"><div class="pi">○</div><span>Storing on-chain</span></div>
+          <div class="pgs" id="ps4"><div class="pi">○</div><span>Dropping to your Crew</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 4 -->
+<div class="overlay" id="ovRev">
+  <div class="modal">
+    <div class="mh blue"><h2>THE PEEL</h2><button class="mcl" onclick="closeAll()">✕</button></div>
+    <div class="mb">
+      <div class="rcardwrap">
+        <div class="rcard">
+          <div class="rtop"><span>#1248</span><span class="rrar">LEGENDARY</span></div>
+          <div style="display:flex;justify-content:center;padding:6px 12px 2px;">
+            <svg width="150" height="108" viewBox="0 0 150 108">
+              <rect width="150" height="108" fill="#1a0000"/>
+              <circle cx="75" cy="56" r="40" fill="#e31e24"/>
+              <ellipse cx="59" cy="37" rx="10" ry="6" fill="rgba(255,255,255,.2)" transform="rotate(-25 59 37)"/>
+              <line x1="36" y1="63" x2="22" y2="83" stroke="#b01818" stroke-width="8" stroke-linecap="round"/>
+              <circle cx="21" cy="85" r="6" fill="#b01818"/>
+              <line x1="114" y1="55" x2="128" y2="36" stroke="#b01818" stroke-width="8" stroke-linecap="round"/>
+              <circle cx="129" cy="34" r="6" fill="#b01818"/>
+              <line x1="62" y1="93" x2="53" y2="104" stroke="#b01818" stroke-width="8" stroke-linecap="round"/>
+              <line x1="88" y1="93" x2="97" y2="104" stroke="#b01818" stroke-width="8" stroke-linecap="round"/>
+              <rect x="48" y="48" width="21" height="13" rx="6" fill="#111"/>
+              <rect x="79" y="48" width="21" height="13" rx="6" fill="#111"/>
+              <path d="M54 77 Q75 90 96 77" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+              <rect x="67" y="78" width="7" height="6" rx="2" fill="white"/>
+              <rect x="76" y="78" width="7" height="6" rx="2" fill="white"/>
+            </svg>
+          </div>
+          <div class="rname">CHERRY BOSS</div>
+          <div class="rstats">
+            <div class="rsr"><span class="rsl">Jaw Smash</span><div class="rsbg"><div class="rsf" style="width:90%;animation-delay:.1s"></div></div><span class="rsv">9</span></div>
+            <div class="rsr"><span class="rsl">Sugar Bomb</span><div class="rsbg"><div class="rsf" style="width:100%;animation-delay:.2s"></div></div><span class="rsv">10</span></div>
+            <div class="rsr"><span class="rsl">Pucker Blast</span><div class="rsbg"><div class="rsf" style="width:20%;animation-delay:.3s"></div></div><span class="rsv">2</span></div>
+            <div class="rsr"><span class="rsl">Flavor Drip</span><div class="rsbg"><div class="rsf" style="width:80%;animation-delay:.4s"></div></div><span class="rsv">8</span></div>
+            <div class="rsr"><span class="rsl">Gutter Splat</span><div class="rsbg"><div class="rsf" style="width:70%;animation-delay:.5s"></div></div><span class="rsv">7</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="rtx">Fresh Drop confirmed on Base Network<br><span>0x8f3a...4d21 · Block 18,447,203</span></div>
+      <div class="rbtns">
+        <button class="mbtn p" onclick="closeAll()">VIEW YOUR CREW</button>
+        <button class="mbtn bl" onclick="crankAgain()">CRANK AGAIN</button>
+        <button class="sbtn">Throw It on the Wall</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const cols=['#e31e24','#e31e24','#e31e24','#1a1aff','#1a1aff','#f0f0f0','#f0f0f0','#1a1a1a','#cc1a1f','#3030dd','#e8e8e8'];
+const szs=[22,20,18,22,20,18,20,22,18,20,16,20,22,18,20,18,22,16,20,18,22,20,16,18,20,22,18,20,16,18,20,18,22,16,20,18,20,22,16,18,20,22,18,20,16];
+const g=document.getElementById('gbGrid');
+szs.forEach(s=>{const d=document.createElement('div');d.className='gbl';d.style.cssText=`width:${s}px;height:${s}px;background:${cols[Math.floor(Math.random()*cols.length)]};`;g.appendChild(d);});
+
+function closeAll(){document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('active'));document.getElementById('mIndent').classList.remove('spin');document.getElementById('coinCta').style.pointerEvents='auto';document.getElementById('ctaCoin').style.animation='';}
+
+// EASTER EGG — tap glass 10 times
+let eeCount=0;let eeTimer=null;let eeActive=false;
+const glass=document.getElementById('gbGrid').parentElement;
+const eeFace=document.getElementById('eeFace');
+const eeTapHint=document.getElementById('eeTapHint');
+glass.style.cursor='pointer';
+glass.addEventListener('click',()=>{
+  if(eeActive)return;
+  eeCount++;
+  if(eeCount===1){eeTapHint.style.opacity='1';}
+  clearTimeout(eeTimer);
+  eeTimer=setTimeout(()=>{eeCount=0;eeTapHint.style.opacity='';},2000);
+  if(eeCount>=10){
+    eeActive=true;
+    eeTapHint.style.opacity='0';
+    eeFace.classList.add('visible');
+    // machine freaks out
+    const mw=document.querySelector('.machine-wrap');
+    mw.classList.add('shake');
+    setTimeout(()=>mw.classList.remove('shake'),600);
+    setTimeout(()=>{
+      eeFace.classList.remove('visible');
+      eeCount=0;eeActive=false;
+      eeTapHint.style.opacity='';
+    },3200);
+  }
+});
+
+// MACHINE SHAKE on coin drop
+// MANIFOLD WIDGET — quantity selector
+let mfQuantity=1;
+function mfQty(d){
+  mfQuantity=Math.max(1,Math.min(10,mfQuantity+d));
+  document.getElementById('mfQtyVal').textContent=mfQuantity;
+}
+
+// COLLECTION GALLERY — real data from the 100 generated cards
+const SPLATZ=[{n:1,nm:"Vanilla Punk",c:"#F0EAD6",r:"R"},{n:2,nm:"Blueberry Cool",c:"#1A56FF",r:"E"},{n:3,nm:"Licorice Cool",c:"#262626",r:"R"},{n:4,nm:"Licorice Brawler",c:"#262626",r:"E"},{n:5,nm:"Grape Goon",c:"#7B3FE4",r:"R"},{n:6,nm:"Bubblegum Menace",c:"#FF5CAD",r:"E"},{n:7,nm:"Lime Chomp",c:"#5FD11A",r:"E"},{n:8,nm:"Cherry Goon",c:"#E31E24",r:"R"},{n:9,nm:"Grape King",c:"#7B3FE4",r:"R"},{n:10,nm:"Cherry Star",c:"#E31E24",r:"C"},{n:11,nm:"Cherry Chomp",c:"#E31E24",r:"E"},{n:12,nm:"Bubblegum Cool",c:"#FF5CAD",r:"E"},{n:13,nm:"Vanilla Cool",c:"#F0EAD6",r:"R"},{n:14,nm:"Licorice Drop",c:"#262626",r:"C"},{n:15,nm:"Vanilla Boss",c:"#F0EAD6",r:"R"},{n:16,nm:"Vanilla Brawler",c:"#F0EAD6",r:"L"},{n:17,nm:"Grape Star",c:"#7B3FE4",r:"L"},{n:18,nm:"Vanilla Slick",c:"#F0EAD6",r:"C"},{n:19,nm:"Orange Punk",c:"#FF8A1E",r:"R"},{n:20,nm:"Blueberry Goon",c:"#1A56FF",r:"R"},{n:21,nm:"Blueberry Chomp",c:"#1A56FF",r:"E"},{n:22,nm:"Vanilla Star",c:"#F0EAD6",r:"R"},{n:23,nm:"Licorice Drop",c:"#262626",r:"E"},{n:24,nm:"Bubblegum Drop",c:"#FF5CAD",r:"R"},{n:25,nm:"Vanilla Chomp",c:"#F0EAD6",r:"R"},{n:26,nm:"Cherry Brawler",c:"#E31E24",r:"R"},{n:27,nm:"Lime King",c:"#5FD11A",r:"R"},{n:28,nm:"Licorice Slick",c:"#262626",r:"R"},{n:29,nm:"Blueberry King",c:"#1A56FF",r:"R"},{n:30,nm:"Cherry Chomp",c:"#E31E24",r:"E"},{n:31,nm:"Lime Slick",c:"#5FD11A",r:"R"},{n:32,nm:"Cherry Punk",c:"#E31E24",r:"C"},{n:33,nm:"Licorice Punk",c:"#262626",r:"R"},{n:34,nm:"Vanilla Hustler",c:"#F0EAD6",r:"R"},{n:35,nm:"Orange Drop",c:"#FF8A1E",r:"R"},{n:36,nm:"Orange Cool",c:"#FF8A1E",r:"E"},{n:37,nm:"Lime Star",c:"#5FD11A",r:"R"},{n:38,nm:"Vanilla Cool",c:"#F0EAD6",r:"R"},{n:39,nm:"Vanilla Hustler",c:"#F0EAD6",r:"R"},{n:40,nm:"Lime King",c:"#5FD11A",r:"R"},{n:41,nm:"Cherry Hustler",c:"#E31E24",r:"C"},{n:42,nm:"Licorice Menace",c:"#262626",r:"E"},{n:43,nm:"Grape Chomp",c:"#7B3FE4",r:"R"},{n:44,nm:"Blueberry Boss",c:"#1A56FF",r:"C"},{n:45,nm:"Vanilla Star",c:"#F0EAD6",r:"R"},{n:46,nm:"Lime Chomp",c:"#5FD11A",r:"R"},{n:47,nm:"Bubblegum Drop",c:"#FF5CAD",r:"C"},{n:48,nm:"Licorice Star",c:"#262626",r:"E"},{n:49,nm:"Blueberry Drop",c:"#1A56FF",r:"R"},{n:50,nm:"Orange King",c:"#FF8A1E",r:"E"},{n:51,nm:"Bubblegum Star",c:"#FF5CAD",r:"E"},{n:52,nm:"Orange Slick",c:"#FF8A1E",r:"E"},{n:53,nm:"Bubblegum Cool",c:"#FF5CAD",r:"C"},{n:54,nm:"Cherry Cool",c:"#E31E24",r:"R"},{n:55,nm:"Orange Hustler",c:"#FF8A1E",r:"C"},{n:56,nm:"Lime Chomp",c:"#5FD11A",r:"L"},{n:57,nm:"Lime Hustler",c:"#5FD11A",r:"R"},{n:58,nm:"Blueberry Punk",c:"#1A56FF",r:"E"},{n:59,nm:"Grape Hustler",c:"#7B3FE4",r:"E"},{n:60,nm:"Licorice Chomp",c:"#262626",r:"R"},{n:61,nm:"Grape Boss",c:"#7B3FE4",r:"R"},{n:62,nm:"Orange Drop",c:"#FF8A1E",r:"C"},{n:63,nm:"Bubblegum Drop",c:"#FF5CAD",r:"R"},{n:64,nm:"Licorice Drop",c:"#262626",r:"C"},{n:65,nm:"Vanilla Boss",c:"#F0EAD6",r:"R"},{n:66,nm:"Bubblegum Star",c:"#FF5CAD",r:"R"},{n:67,nm:"Bubblegum Boss",c:"#FF5CAD",r:"E"},{n:68,nm:"Licorice Boss",c:"#262626",r:"E"},{n:69,nm:"Grape Slick",c:"#7B3FE4",r:"R"},{n:70,nm:"Licorice Boss",c:"#262626",r:"C"},{n:71,nm:"Bubblegum Star",c:"#FF5CAD",r:"R"},{n:72,nm:"Bubblegum Star",c:"#FF5CAD",r:"R"},{n:73,nm:"Orange Hustler",c:"#FF8A1E",r:"R"},{n:74,nm:"Licorice Chomp",c:"#262626",r:"R"},{n:75,nm:"Blueberry Drop",c:"#1A56FF",r:"E"},{n:76,nm:"Orange Drop",c:"#FF8A1E",r:"C"},{n:77,nm:"Orange Goon",c:"#FF8A1E",r:"C"},{n:78,nm:"Grape Cool",c:"#7B3FE4",r:"R"},{n:79,nm:"Grape Punk",c:"#7B3FE4",r:"R"},{n:80,nm:"Blueberry Slick",c:"#1A56FF",r:"R"},{n:81,nm:"Vanilla Punk",c:"#F0EAD6",r:"R"},{n:82,nm:"Licorice Drop",c:"#262626",r:"R"},{n:83,nm:"Lime Punk",c:"#5FD11A",r:"R"},{n:84,nm:"Licorice King",c:"#262626",r:"E"},{n:85,nm:"Grape Slick",c:"#7B3FE4",r:"R"},{n:86,nm:"Vanilla Slick",c:"#F0EAD6",r:"C"},{n:87,nm:"Lime Boss",c:"#5FD11A",r:"R"},{n:88,nm:"Orange Boss",c:"#FF8A1E",r:"R"},{n:89,nm:"Vanilla Cool",c:"#F0EAD6",r:"E"},{n:90,nm:"Bubblegum Chomp",c:"#FF5CAD",r:"C"},{n:91,nm:"Orange Star",c:"#FF8A1E",r:"R"},{n:92,nm:"Bubblegum Punk",c:"#FF5CAD",r:"R"},{n:93,nm:"Lime Brawler",c:"#5FD11A",r:"C"},{n:94,nm:"Vanilla Star",c:"#F0EAD6",r:"R"},{n:95,nm:"Grape Punk",c:"#7B3FE4",r:"R"},{n:96,nm:"Orange Drop",c:"#FF8A1E",r:"R"},{n:97,nm:"Vanilla Hustler",c:"#F0EAD6",r:"R"},{n:98,nm:"Grape Star",c:"#7B3FE4",r:"L"},{n:99,nm:"Orange Hustler",c:"#FF8A1E",r:"E"},{n:100,nm:"Licorice Boss",c:"#262626",r:"C"}];
+const RARCOLOR={L:"linear-gradient(135deg,#FFD200,#FF7A00)",E:"linear-gradient(135deg,#B14BFF,#6A1FE0)",R:"linear-gradient(135deg,#33C2FF,#1A56FF)",C:"linear-gradient(135deg,#9AA0A6,#5F6368)"};
+const RARNAME={L:"Street Legend",E:"Block Hitter",R:"Fresh Drop",C:"Pavement Card"};
+const PULLED_COUNT=47; // demo: first 47 pulled
+function renderGallery(){
+  const grid=document.getElementById('galleryGrid');
+  if(!grid)return;
+  grid.innerHTML=SPLATZ.map(s=>{
+    if(s.n<=PULLED_COUNT){
+      return `<div class="gball pulled" style="background:${s.c};border-color:${s.c}">
+        <div class="glo"></div>
+        <div class="rardot" style="background:${RARCOLOR[s.r]}"></div>
+        <div class="gtip">#${String(s.n).padStart(3,'0')} ${s.nm} · ${RARNAME[s.r]}</div>
+      </div>`;
+    }
+    return `<div class="gball locked"><div class="gtip">Still in the machine</div></div>`;
+  }).join('');
+}
+renderGallery();
+
+function startFlow(){
+  document.getElementById('ctaCoin').style.animation='cinsert .5s ease-in forwards';
+  document.getElementById('coinCta').style.pointerEvents='none';
+  const mw=document.querySelector('.machine-wrap');
+  setTimeout(()=>{
+    mw.classList.add('shake');
+    setTimeout(()=>mw.classList.remove('shake'),600);
+  },200);
+  setTimeout(()=>document.getElementById('ovEx').classList.add('active'),620);
+}
+
+function showPayment(){document.getElementById('ovEx').classList.remove('active');document.getElementById('walletNav').style.display='flex';setTimeout(()=>document.getElementById('ovPay').classList.add('active'),200);}
+
+function startMinting(){document.getElementById('ovPay').classList.remove('active');document.getElementById('mIndent').classList.add('spin');setTimeout(()=>{document.getElementById('ovMint').classList.add('active');runSteps();},400);}
+
+function runSteps(){
+  const bar=document.getElementById('pgbar');
+  const steps=['ps1','ps2','ps3','ps4'];
+  const labels=['Splat confirmed on Base','Generating your Splatz','Storing on-chain','Dropping to your Crew'];
+  const delays=[900,2200,3800,5400];
+  const widths=['25%','50%','75%','100%'];
+  delays.forEach((delay,i)=>{
+    setTimeout(()=>{
+      if(i>0){document.getElementById(steps[i-1]).classList.remove('active');document.getElementById(steps[i-1]).classList.add('done');document.getElementById(steps[i-1]).querySelector('.pi').textContent='✓';}
+      document.getElementById(steps[i]).classList.add('active');document.getElementById(steps[i]).querySelector('.pi').textContent='●';
+      document.getElementById('mlbl').textContent=labels[i];bar.style.width=widths[i];
+    },delay);
+  });
+  setTimeout(()=>document.getElementById('dgb').classList.add('drop'),5800);
+  setTimeout(()=>{
+    steps.forEach(s=>{document.getElementById(s).classList.remove('active');document.getElementById(s).classList.add('done');document.getElementById(s).querySelector('.pi').textContent='✓';});
+    document.getElementById('mIndent').classList.remove('spin');
+    document.getElementById('ovMint').classList.remove('active');
+    setTimeout(()=>document.getElementById('ovRev').classList.add('active'),300);
+  },7000);
+}
+
+function crankAgain(){closeAll();setTimeout(()=>{document.getElementById('coinCta').style.pointerEvents='auto';document.getElementById('ctaCoin').style.animation='';document.getElementById('dgb').classList.remove('drop');['ps1','ps2','ps3','ps4'].forEach((s,i)=>{const el=document.getElementById(s);el.className='pgs'+(i===0?' active':'');el.querySelector('.pi').textContent=i===0?'●':'○';});document.getElementById('pgbar').style.width='0%';document.getElementById('mlbl').textContent='Splat confirmed on Base';},150);}
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+{
+  "name": "Orange Slick #052",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/052.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Orange"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Star"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Shout"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Showboat"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Block Hitter"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 9
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 7
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 8
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 6
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 9
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 39
+    }
+  ]
+}

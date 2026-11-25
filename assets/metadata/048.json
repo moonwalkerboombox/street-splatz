@@ -1,0 +1,51 @@
+{
+  "name": "Licorice Star #048",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/048.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Licorice"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Round"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Flat"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Lean"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Block Hitter"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 9
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 6
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 8
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 2
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 10
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 35
+    }
+  ]
+}

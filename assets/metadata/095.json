@@ -1,0 +1,51 @@
+{
+  "name": "Grape Punk #095",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/095.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Grape"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Round"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Smirk"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Grump"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Fresh Drop"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 3
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 8
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 6
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 4
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 7
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 28
+    }
+  ]
+}

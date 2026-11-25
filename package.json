@@ -1,0 +1,8 @@
+{
+  "name": "street-splatz",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:assets": "node scripts/build-assets.mjs"
+  }
+}

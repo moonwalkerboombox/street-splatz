@@ -1,0 +1,51 @@
+{
+  "name": "Cherry Punk #032",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/032.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Cherry"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Heart"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Fang"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Grump"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Pavement Card"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 2
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 2
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 8
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 3
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 9
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 24
+    }
+  ]
+}

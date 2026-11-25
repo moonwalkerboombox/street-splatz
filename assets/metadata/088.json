@@ -1,0 +1,51 @@
+{
+  "name": "Orange Boss #088",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/088.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Orange"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Round"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Grin"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Showboat"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Fresh Drop"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 7
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 3
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 8
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 9
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 5
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 32
+    }
+  ]
+}

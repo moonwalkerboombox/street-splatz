@@ -1,0 +1,4 @@
+{
+  "provenance": "0x264886fd23edf515b591db48f8f540a61ea75a6efc59376624af1582f1d01fe5",
+  "method": "sha256 over concatenated sha256 hex of png NNN then metadata NNN, cards 001 to 100, source files in assets/"
+}

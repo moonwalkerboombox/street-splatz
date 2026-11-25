@@ -1,0 +1,51 @@
+{
+  "name": "Orange Star #091",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/091.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Orange"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Shades"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Grin"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Boss"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Fresh Drop"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 4
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 6
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 7
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 6
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 7
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 30
+    }
+  ]
+}

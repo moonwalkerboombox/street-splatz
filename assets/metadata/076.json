@@ -1,0 +1,51 @@
+{
+  "name": "Orange Drop #076",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/076.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Orange"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Heart"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Grin"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Lean"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Pavement Card"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 10
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 3
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 4
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 3
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 2
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 22
+    }
+  ]
+}

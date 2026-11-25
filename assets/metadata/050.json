@@ -1,0 +1,51 @@
+{
+  "name": "Orange King #050",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/050.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Orange"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Star"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Shout"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Boss"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Block Hitter"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 8
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 5
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 10
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 3
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 9
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 35
+    }
+  ]
+}

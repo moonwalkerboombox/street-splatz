@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="760" viewBox="0 0 520 760">
+<defs>
+      <linearGradient id="bgg51" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#680033"/><stop offset="1" stop-color="#910048"/>
+      </linearGradient>
+      <linearGradient id="rar51" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#B14BFF"/><stop offset="1" stop-color="#6A1FE0"/>
+      </linearGradient>
+    </defs>
+<rect x="6" y="6" width="508" height="748" rx="28" fill="#0A0A0A"/>
+<rect x="14" y="14" width="492" height="732" rx="22" fill="none" stroke="url(#rar51)" stroke-width="6"/>
+<rect x="34" y="92" width="452" height="380" rx="16" fill="url(#bgg51)"/>
+<line x1="34" y1="380" x2="486" y2="380" stroke="#000" stroke-opacity="0.15" stroke-width="2"/>
+<circle cx="148" cy="286" r="16" fill="#D00067"/><circle cx="376" cy="156" r="16" fill="#D00067"/><circle cx="234" cy="384" r="15" fill="#D00067"/><circle cx="286" cy="384" r="15" fill="#D00067"/><circle cx="260" cy="268" r="118" fill="#FF5CAD" stroke="#111" stroke-width="4"/><ellipse cx="213" cy="215" rx="40" ry="26" fill="#fff" opacity="0.28" transform="rotate(-25 213 215)"/><polygon points="226.0,234.0 221.9,244.3 210.8,245.1 219.3,252.2 216.6,262.9 226.0,257.0 235.4,262.9 232.7,252.2 241.2,245.1 230.1,244.3" fill="#FFD200" stroke="#111" stroke-width="2"/><polygon points="294.0,234.0 289.9,244.3 278.8,245.1 287.3,252.2 284.6,262.9 294.0,257.0 303.4,262.9 300.7,252.2 309.2,245.1 298.1,244.3" fill="#FFD200" stroke="#111" stroke-width="2"/><path d="M230 308 Q270 326 298 296" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round"/>
+<rect x="30" y="30" width="92" height="40" rx="20" fill="#111" stroke="#333" stroke-width="2"/>
+<text x="76" y="57" font-family="Arial Black, Arial" font-size="22" fill="#fff" text-anchor="middle" font-weight="900">#051</text>
+<rect x="314" y="30" width="176" height="40" rx="20" fill="url(#rar51)"/>
+<text x="402" y="57" font-family="Arial Black, Arial" font-size="16" fill="#111" text-anchor="middle" font-weight="900" letter-spacing="1">BLOCK HITTER</text>
+<rect x="34" y="486" width="452" height="52" rx="12" fill="#FF5CAD" stroke="#111" stroke-width="3"/>
+<text x="260" y="521" font-family="Arial Black, Arial" font-size="26" fill="#111111" text-anchor="middle" font-weight="900" letter-spacing="1">BUBBLEGUM STAR</text>
+<text x="40" y="573" font-family="Arial" font-size="13" fill="#cfcfcf" font-weight="700">JAW SMASH</text>
+<rect x="200" y="562" width="250" height="13" rx="6" fill="#1c1c1c"/>
+<rect x="200" y="562" width="75" height="13" rx="6" fill="url(#rar51)"/>
+<text x="466" y="573" font-family="Arial Black, Arial" font-size="13" fill="#fff" text-anchor="end" font-weight="900">3</text>
+<text x="470" y="573" font-family="Arial" font-size="11" fill="#666" font-weight="700">/10</text>
+<text x="40" y="605" font-family="Arial" font-size="13" fill="#cfcfcf" font-weight="700">SUGAR BOMB</text>
+<rect x="200" y="594" width="250" height="13" rx="6" fill="#1c1c1c"/>
+<rect x="200" y="594" width="225" height="13" rx="6" fill="url(#rar51)"/>
+<text x="466" y="605" font-family="Arial Black, Arial" font-size="13" fill="#fff" text-anchor="end" font-weight="900">9</text>
+<text x="470" y="605" font-family="Arial" font-size="11" fill="#666" font-weight="700">/10</text>
+<text x="40" y="637" font-family="Arial" font-size="13" fill="#cfcfcf" font-weight="700">PUCKER BLAST</text>
+<rect x="200" y="626" width="250" height="13" rx="6" fill="#1c1c1c"/>
+<rect x="200" y="626" width="225" height="13" rx="6" fill="url(#rar51)"/>
+<text x="466" y="637" font-family="Arial Black, Arial" font-size="13" fill="#fff" text-anchor="end" font-weight="900">9</text>
+<text x="470" y="637" font-family="Arial" font-size="11" fill="#666" font-weight="700">/10</text>
+<text x="40" y="669" font-family="Arial" font-size="13" fill="#cfcfcf" font-weight="700">FLAVOR DRIP</text>
+<rect x="200" y="658" width="250" height="13" rx="6" fill="#1c1c1c"/>
+<rect x="200" y="658" width="225" height="13" rx="6" fill="url(#rar51)"/>
+<text x="466" y="669" font-family="Arial Black, Arial" font-size="13" fill="#fff" text-anchor="end" font-weight="900">9</text>
+<text x="470" y="669" font-family="Arial" font-size="11" fill="#666" font-weight="700">/10</text>
+<text x="40" y="701" font-family="Arial" font-size="13" fill="#cfcfcf" font-weight="700">GUTTER SPLAT</text>
+<rect x="200" y="690" width="250" height="13" rx="6" fill="#1c1c1c"/>
+<rect x="200" y="690" width="225" height="13" rx="6" fill="url(#rar51)"/>
+<text x="466" y="701" font-family="Arial Black, Arial" font-size="13" fill="#fff" text-anchor="end" font-weight="900">9</text>
+<text x="470" y="701" font-family="Arial" font-size="11" fill="#666" font-weight="700">/10</text>
+<text x="260" y="738" font-family="Arial" font-size="11" fill="#555" text-anchor="middle" letter-spacing="2">STREET SPLATZ · BASE NETWORK</text>
+</svg>

@@ -1,0 +1,51 @@
+{
+  "name": "Bubblegum Cool #053",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/053.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Bubblegum"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Round"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Smirk"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Lean"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Pavement Card"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 9
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 2
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 5
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 3
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 5
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 24
+    }
+  ]
+}

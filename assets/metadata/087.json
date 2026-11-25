@@ -1,0 +1,51 @@
+{
+  "name": "Lime Boss #087",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/087.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Lime"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Heart"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Smirk"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Lean"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Fresh Drop"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 4
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 4
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 8
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 4
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 9
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 29
+    }
+  ]
+}

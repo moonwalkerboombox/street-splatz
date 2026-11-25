@@ -1,0 +1,51 @@
+{
+  "name": "Lime Slick #031",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/031.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Lime"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Shades"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Smirk"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Lean"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Fresh Drop"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 9
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 5
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 4
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 6
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 2
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 26
+    }
+  ]
+}

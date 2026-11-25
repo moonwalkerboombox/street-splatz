@@ -1,0 +1,51 @@
+{
+  "name": "Cherry Chomp #011",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/011.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Cherry"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Star"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Fang"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Grump"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Block Hitter"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 9
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 6
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 3
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 6
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 10
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 34
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="760" viewBox="0 0 520 760">
+<defs>
+      <linearGradient id="bgg8" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#44080A"/><stop offset="1" stop-color="#5F0B0E"/>
+      </linearGradient>
+      <linearGradient id="rar8" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#33C2FF"/><stop offset="1" stop-color="#1A56FF"/>
+      </linearGradient>
+    </defs>
+<rect x="6" y="6" width="508" height="748" rx="28" fill="#0A0A0A"/>
+<rect x="14" y="14" width="492" height="732" rx="22" fill="none" stroke="url(#rar8)" stroke-width="6"/>
+<rect x="34" y="92" width="452" height="380" rx="16" fill="url(#bgg8)"/>
+<line x1="34" y1="380" x2="486" y2="380" stroke="#000" stroke-opacity="0.15" stroke-width="2"/>
+<circle cx="148" cy="286" r="16" fill="#891114"/><circle cx="376" cy="156" r="16" fill="#891114"/><circle cx="234" cy="384" r="15" fill="#891114"/><circle cx="286" cy="384" r="15" fill="#891114"/><circle cx="260" cy="268" r="118" fill="#E31E24" stroke="#111" stroke-width="4"/><ellipse cx="213" cy="215" rx="40" ry="26" fill="#fff" opacity="0.28" transform="rotate(-25 213 215)"/><path d="M226 260 C210 242 224 232 226 244 C228 232 242 242 226 260 Z" fill="#FF2D6F" stroke="#111" stroke-width="2"/><path d="M294 260 C278 242 292 232 294 244 C296 232 310 242 294 260 Z" fill="#FF2D6F" stroke="#111" stroke-width="2"/><path d="M220 298 Q260 342 300 298 Z" fill="#fff" stroke="#111" stroke-width="3"/><path d="M220 298 Q260 342 300 298" fill="none" stroke="#111" stroke-width="3"/>
+<rect x="30" y="30" width="92" height="40" rx="20" fill="#111" stroke="#333" stroke-width="2"/>
+<text x="76" y="57" font-family="Arial Black, Arial" font-size="22" fill="#fff" text-anchor="middle" font-weight="900">#008</text>
+<rect x="314" y="30" width="176" height="40" rx="20" fill="url(#rar8)"/>
+<text x="402" y="57" font-family="Arial Black, Arial" font-size="16" fill="#111" text-anchor="middle" font-weight="900" letter-spacing="1">FRESH DROP</text>
+<rect x="34" y="486" width="452" height="52" rx="12" fill="#E31E24" stroke="#111" stroke-width="3"/>
+<text x="260" y="521" font-family="Arial Black, Arial" font-size="26" fill="#FFFFFF" text-anchor="middle" font-weight="900" letter-spacing="1">CHERRY GOON</text>
+<text x="40" y="573" font-family="Arial" font-size="13" fill="#cfcfcf" font-weight="700">JAW SMASH</text>
+<rect x="200" y="562" width="250" height="13" rx="6" fill="#1c1c1c"/>
+<rect x="200" y="562" width="225" height="13" rx="6" fill="url(#rar8)"/>
+<text x="466" y="573" font-family="Arial Black, Arial" font-size="13" fill="#fff" text-anchor="end" font-weight="900">9</text>
+<text x="470" y="573" font-family="Arial" font-size="11" fill="#666" font-weight="700">/10</text>
+<text x="40" y="605" font-family="Arial" font-size="13" fill="#cfcfcf" font-weight="700">SUGAR BOMB</text>
+<rect x="200" y="594" width="250" height="13" rx="6" fill="#1c1c1c"/>
+<rect x="200" y="594" width="150" height="13" rx="6" fill="url(#rar8)"/>
+<text x="466" y="605" font-family="Arial Black, Arial" font-size="13" fill="#fff" text-anchor="end" font-weight="900">6</text>
+<text x="470" y="605" font-family="Arial" font-size="11" fill="#666" font-weight="700">/10</text>
+<text x="40" y="637" font-family="Arial" font-size="13" fill="#cfcfcf" font-weight="700">PUCKER BLAST</text>
+<rect x="200" y="626" width="250" height="13" rx="6" fill="#1c1c1c"/>
+<rect x="200" y="626" width="75" height="13" rx="6" fill="url(#rar8)"/>
+<text x="466" y="637" font-family="Arial Black, Arial" font-size="13" fill="#fff" text-anchor="end" font-weight="900">3</text>
+<text x="470" y="637" font-family="Arial" font-size="11" fill="#666" font-weight="700">/10</text>
+<text x="40" y="669" font-family="Arial" font-size="13" fill="#cfcfcf" font-weight="700">FLAVOR DRIP</text>
+<rect x="200" y="658" width="250" height="13" rx="6" fill="#1c1c1c"/>
+<rect x="200" y="658" width="250" height="13" rx="6" fill="url(#rar8)"/>
+<text x="466" y="669" font-family="Arial Black, Arial" font-size="13" fill="#fff" text-anchor="end" font-weight="900">10</text>
+<text x="470" y="669" font-family="Arial" font-size="11" fill="#666" font-weight="700">/10</text>
+<text x="40" y="701" font-family="Arial" font-size="13" fill="#cfcfcf" font-weight="700">GUTTER SPLAT</text>
+<rect x="200" y="690" width="250" height="13" rx="6" fill="#1c1c1c"/>
+<rect x="200" y="690" width="50" height="13" rx="6" fill="url(#rar8)"/>
+<text x="466" y="701" font-family="Arial Black, Arial" font-size="13" fill="#fff" text-anchor="end" font-weight="900">2</text>
+<text x="470" y="701" font-family="Arial" font-size="11" fill="#666" font-weight="700">/10</text>
+<text x="260" y="738" font-family="Arial" font-size="11" fill="#555" text-anchor="middle" letter-spacing="2">STREET SPLATZ · BASE NETWORK</text>
+</svg>

@@ -1,0 +1,51 @@
+{
+  "name": "Lime Chomp #056",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/056.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Lime"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Heart"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Flat"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Showboat"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Street Legend"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 10
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 9
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 9
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 8
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 6
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 42
+    }
+  ]
+}

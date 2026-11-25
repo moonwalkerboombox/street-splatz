@@ -1,0 +1,51 @@
+{
+  "name": "Blueberry King #029",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/029.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Blueberry"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Round"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Smirk"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Grump"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Fresh Drop"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 2
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 8
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 3
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 10
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 10
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 33
+    }
+  ]
+}

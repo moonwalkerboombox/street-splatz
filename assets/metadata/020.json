@@ -1,0 +1,51 @@
+{
+  "name": "Blueberry Goon #020",
+  "description": "A one-of-a-kind Street Splatz pulled fresh from The Machine. Wild flavor drops.",
+  "image": "ipfs://REPLACE_CID/020.png",
+  "attributes": [
+    {
+      "trait_type": "Flavor",
+      "value": "Blueberry"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Googly"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Shout"
+    },
+    {
+      "trait_type": "Pose",
+      "value": "Showboat"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Fresh Drop"
+    },
+    {
+      "trait_type": "Jaw Smash",
+      "value": 7
+    },
+    {
+      "trait_type": "Sugar Bomb",
+      "value": 3
+    },
+    {
+      "trait_type": "Pucker Blast",
+      "value": 10
+    },
+    {
+      "trait_type": "Flavor Drip",
+      "value": 10
+    },
+    {
+      "trait_type": "Gutter Splat",
+      "value": 3
+    },
+    {
+      "trait_type": "Total Juice",
+      "value": 33
+    }
+  ]
+}
