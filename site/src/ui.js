@@ -33,6 +33,8 @@ export const tierColor = (tier) => TIER_COLORS[tier] || TIER_COLORS['Pavement Ca
 // A cue is asked for at the moment its animation starts, with the delay that animation needs.
 let cue = () => {};
 export const onCue = (fn) => { cue = fn; };
+// For play.js, which has sounds of its own to ask for.
+export const playCue = (name, opts) => cue(name, opts);
 
 /* ---------- the machine ---------- */
 
@@ -79,6 +81,14 @@ function place(id, slot) {
   // Higher rows paint over lower ones, as they do in the art. #gbGrid keeps these numbers to itself, so the
   // machine's front art, the hint and the easter egg face all paint over the whole pile.
   b.el.style.zIndex = String(slot);
+  // Idle life (style.css): --wx and --wy place the gumball in the ripples that cross the pile, and --jx, --jy
+  // point its little hop toward the middle of the glass, so a moving gumball never leaves the glass.
+  b.el.style.setProperty('--wx', (s.x / 100).toFixed(2));
+  b.el.style.setProperty('--wy', (s.y / 100).toFixed(2));
+  b.el.style.setProperty('--jx', ((50 - s.x) / 100).toFixed(2));
+  b.el.style.setProperty('--jy', s.y >= 50 ? '-1' : '.6');
+  // Only a gumball well inside the glass also rocks. One against the rim or on the collar keeps its box square.
+  b.el.style.setProperty('--jr', Math.hypot(s.x - 50, s.y - 50) < 34 && s.y < 74 ? '1' : '0');
 }
 function settle(slot) {
   for (;;) {
@@ -132,6 +142,54 @@ export function renderGlass(cards, pulledIds, known = true) {
   }
 }
 
+// The whole pile jumps and settles. It is heard only when gumballs really move: some are left and motion is on.
+export function rattlePile() {
+  const glass = $('glass');
+  // Only a rattle that is still going needs the layout read that starts it over.
+  if (glass.classList.contains('rattle')) {
+    glass.classList.remove('rattle');
+    void glass.offsetWidth;
+  }
+  glass.classList.add('rattle');
+  clearTimeout(rattlePile.t);
+  rattlePile.t = setTimeout(() => glass.classList.remove('rattle'), 600);
+  const heard = balls.size > 0 && !reducedMotion();
+  if (heard) cue('rattle');
+  return heard;
+}
+
+// The gumballs near a point of the page hop away from it, the nearest ones furthest. reach is how far the push
+// is felt, as a share of the glass, and push is the longest hop in gumball widths. Returns how many hopped.
+// delay (ms) holds the hop back, so a caller can set it up ahead of the moment it is for.
+// One style pass and one animation each, on transform only. Nothing moves with reduced motion.
+let hopTimer = null;
+export function scatterPile(x, y, { reach = 0.26, push = 0.85, delay = 0 } = {}) {
+  // Measured on the glass, which the pile fills: the pile itself may still be tumbling in.
+  const grid = $('gbGrid'); const g = $('glass').getBoundingClientRect();
+  if (reducedMotion() || !balls.size || !g.width) return 0;
+  const px = ((x - g.left) / g.width) * 100; const py = ((y - g.top) / g.height) * 100; const far = reach * 100;
+  const moved = []; let again = false;
+  grid.style.setProperty('--hd', `${delay}ms`);
+  for (const b of balls.values()) {
+    const s = SLOTS[b.slot]; const dx = s.x - px; const dy = s.y - py; const d = Math.hypot(dx, dy);
+    if (b.el.classList.contains('hop')) { again = true; b.el.classList.remove('hop'); }
+    if (d > far) continue;
+    const k = (1 - d / far) ** 0.7 * push * 100;
+    // A gumball right under the finger has no direction to go, so it jumps up.
+    const ux = d > 1 ? dx / d : 0; const uy = d > 1 ? dy / d : -1;
+    b.el.style.setProperty('--hx', `${(ux * k).toFixed(0)}%`);
+    b.el.style.setProperty('--hy', `${(uy * k).toFixed(0)}%`);
+    b.el.style.setProperty('--hr', `${(ux * k * 0.4).toFixed(0)}deg`);
+    moved.push(b.el);
+  }
+  // Only gumballs that were still hopping need the layout read that starts them over.
+  if (again) void grid.offsetWidth;
+  for (const el of moved) el.classList.add('hop');
+  clearTimeout(hopTimer);
+  hopTimer = setTimeout(() => { for (const b of balls.values()) b.el.classList.remove('hop'); }, 560 + delay);
+  return moved.length;
+}
+
 // Points the coin's flight at the slot on the machine, wherever the layout has put the two.
 // The coin is measured where it rests, not where a hover or a press has nudged it, because the flight
 // starts from the resting spot.
@@ -148,27 +206,37 @@ function aimCoin() {
 }
 
 // sound: false flies the coin without the slot and shake sounds (the preview build, where nothing is pulled).
-export async function coinInsert(sound = true) {
+// held: the visitor carried the coin to the slot and let go (play.js). It goes in from where it was dropped,
+// which is --dx, --dy away from its resting spot, instead of flying up from under the machine.
+export async function coinInsert(sound = true, held = false) {
   clearGumball();
   aimCoin();
+  $('coin').classList.toggle('dropin', held);
   $('coin').classList.add('inserted');
-  // The coin reaches the slot 80% of the way into its .66s flight. With reduced motion there is no flight:
-  // the coin is in at once, so the slot sound only waits for the pick up sound (0.12s) to get out of its way.
-  if (sound) cue('coinDrop', { delay: reducedMotion() ? 0.12 : 0.53 });
-  await wait(460);
+  // The coin reaches the slot 80% of the way into its .66s flight, or 60% into the .34s it takes from the hand.
+  // With reduced motion there is no flight: the coin is in at once, so the slot sound only waits for the pick up
+  // sound (0.12s) to get out of its way.
+  if (sound) cue('coinDrop', { delay: reducedMotion() ? 0.12 : held ? 0.2 : 0.53 });
+  await wait(held ? 250 : 460);
   shake(sound && { delay: 0 });
   await wait(260);
 }
 // The coin stays in the machine (out of sight) from the moment the pull lands until The Peel is closed.
 export const coinAway = () => $('coin').classList.add('away');
-export const coinReset = () => $('coin').classList.remove('inserted', 'away');
+export function coinReset() {
+  const coin = $('coin');
+  coin.classList.remove('inserted', 'away', 'dropin');
+  coin.style.removeProperty('--dx');
+  coin.style.removeProperty('--dy');
+}
 
 // sound: the options for the rattle that goes with the shake, or false for a silent one.
 // With reduced motion the machine holds still, so there is nothing to hear.
 export function shake(sound = {}) {
   const m = $('machine');
   if (sound && !reducedMotion()) cue('rattle', sound);
-  m.classList.remove('shake');
+  // The shake outranks a knock or the jump scare's jolt that is still on the machine.
+  m.classList.remove('shake', 'jolt', 'knock');
   void m.offsetWidth;
   m.classList.add('shake');
   setTimeout(() => m.classList.remove('shake'), 600);
@@ -202,35 +270,73 @@ export function clearGumball() {
   $('crank').classList.remove('turn');
 }
 
-// Easter egg from the mockup. Ten quick taps on the glass and something looks back.
-export function setupGlassEgg() {
-  let count = 0; let timer = null; let active = false;
+// The jump scare. Ten quick taps on the glass and a mutant gumball slams its face against the inside of it,
+// holds for about a second and drops back into the pile. Three faces take turns.
+// canScare: main.js says when the face may come. Not while a pull is in flight or the coin is on its way in
+// (nothing jolts the machine then), and not under the CLOSED sign or the SOLD OUT stamp, which would hide it.
+const SCARE_HOLD = 1300; const SCARE_DROP = 340; const SCARE_JOLT = 480;
+export function setupGlassEgg(canScare = () => true) {
+  let count = 0; let timer = null; let active = false; let turn = 0;
   const face = $('eeFace'); const hint = $('eeTapHint'); const glass = $('glass');
-  // Every tap rattles the pile. It is heard only when gumballs really move: some are left and motion is on.
-  const rattle = () => {
-    glass.classList.remove('rattle');
-    void glass.offsetWidth;
-    glass.classList.add('rattle');
-    setTimeout(() => glass.classList.remove('rattle'), 600);
-    const heard = balls.size > 0 && !reducedMotion();
-    if (heard) cue('rattle');
-    return heard;
+  const middle = () => { const r = glass.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+  const scare = () => {
+    const m = $('machine'); const still = reducedMotion();
+    active = true;
+    clearTimeout(timer);
+    hint.style.opacity = '0';
+    face.dataset.v = String(turn++ % 3);
+    face.classList.remove('drop');
+    face.classList.add('visible');
+    cue('scare');
+    // The machine takes the hit and the pile is thrown outward as the face lands, 110ms in. The face and the jolt
+    // start in this frame and then run on their own. The pile is set up straight after that frame, with what is
+    // left of the 110ms as its delay, so a slow phone shows the face first and has nothing to do when it hits.
+    // With reduced motion the face is simply there, and then it is not.
+    if (!still) {
+      m.classList.remove('jolt', 'knock');
+      m.classList.add('jolt');
+      const t0 = performance.now();
+      requestAnimationFrame(() => setTimeout(() => scatterPile(...middle(), { reach: 0.62, push: 1.3, delay: Math.max(0, Math.round(110 - (performance.now() - t0))) }), 0));
+      // The jolt comes off as soon as it is over, so the machine is free to shake for a coin.
+      setTimeout(() => m.classList.remove('jolt'), SCARE_JOLT);
+    }
+    const end = () => {
+      face.classList.remove('visible', 'drop');
+      count = 0; active = false; hint.style.opacity = '';
+    };
+    setTimeout(() => {
+      if (still) { end(); return; }
+      face.classList.add('drop');
+      // It lands back in the pile.
+      setTimeout(() => { end(); rattlePile(); }, SCARE_DROP);
+    }, SCARE_HOLD);
   };
-  glass.addEventListener('click', () => {
-    const heard = rattle();
+  glass.addEventListener('click', (e) => {
+    const now = !active && count >= 9 && canScare();
+    // Every tap rattles the pile, and the gumballs nearest the finger hop away from it. A tap from the
+    // keyboard has no place of its own, so it lands in the middle of the glass. The tap that brings the
+    // face leaves the pile to the face, which throws all of it.
+    if (!now) {
+      rattlePile();
+      const [mx, my] = middle();
+      const keyed = e.detail === 0 && !e.clientX && !e.clientY;
+      scatterPile(keyed ? mx : e.clientX, keyed ? my : e.clientY);
+    }
     // The pitch climbs with each tap of a run.
     cue('glass', { n: active ? 8 : Math.min(count, 8) });
     if (active) return;
-    count += 1;
+    // A run that cannot end in the face yet stays one tap short of it.
+    count = Math.min(count + 1, now ? 10 : 9);
     if (count === 1) hint.style.opacity = '1';
     clearTimeout(timer);
     timer = setTimeout(() => { count = 0; hint.style.opacity = ''; }, 2000);
-    if (count < 10) return;
-    active = true;
-    hint.style.opacity = '0';
-    face.classList.add('visible');
-    shake(!heard && {});
-    setTimeout(() => { face.classList.remove('visible'); count = 0; active = false; hint.style.opacity = ''; }, 3200);
+    if (now) scare();
+  });
+  // The glass is a button to the keyboard too.
+  glass.addEventListener('keydown', (e) => {
+    if (e.target !== glass || (e.key !== 'Enter' && e.key !== ' ') || e.repeat) return;
+    e.preventDefault();
+    glass.click();
   });
 }
 

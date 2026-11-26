@@ -11,7 +11,8 @@
  */
 export type SoundName =
   | 'tap' | 'glass' | 'coinPick' | 'coinDrop' | 'crank' | 'crankLoop'
-  | 'rattle' | 'chute' | 'peel' | 'jam' | 'soldOut' | 'toggle';
+  | 'rattle' | 'chute' | 'peel' | 'jam' | 'soldOut' | 'toggle'
+  | 'scare' | 'knock' | 'flap' | 'ratchet';
 
 export interface CreateSoundOptions {
   /** localStorage key for the mute state ('on' / 'off'). null or '' disables persistence. Default 'splatz-sound'. */
@@ -49,7 +50,7 @@ export interface Sound {
    * If the context is suspended or interrupted, the sound starts as soon as resume() succeeds
    * (one shots are dropped if that takes more than 400 ms).
    * Burst guard: the same sound is ignored if asked for again within 30 ms (tap, glass,
-   * toggle, coinPick, peel 0) or 120 ms (the rest).
+   * toggle, coinPick, peel 0, ratchet) or 120 ms (the rest).
    *
    * play('crankLoop') returns a stop function (safe to call more than once); every other
    * name returns undefined. Only one loop runs at a time: starting another stops the one

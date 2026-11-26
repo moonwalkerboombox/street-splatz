@@ -6,11 +6,12 @@ const set = (p, v, t) => p.setValueAtTime(v, t);
 const lin = (p, v, t) => p.linearRampToValueAtTime(v, t);
 const exp = (p, v, t) => p.exponentialRampToValueAtTime(v, t);
 const noop = () => {};
-const SHORT = /^(tap|glass|toggle|coinPick|peel0)$/; // retrigger after 30 ms, the rest 120 ms
+const SHORT = /^(tap|glass|toggle|coinPick|peel0|ratchet)$/; // retrigger after 30 ms, the rest 120 ms
 
 // written by render.mjs --calibrate: peaks near -6 dBFS
 const TRIM = {
   tap: 0.373, glass: 0.25, coinPick: 0.336, coinDrop: 0.44, crank: 0.606, crankLoop: 0.556, rattle: 0.412, chute: 0.543, peel0: 0.298, peel1: 0.269, peel2: 0.24, peel3: 0.218, jam: 0.65, soldOut: 0.288, toggle: 0.526,
+  scare: 0.446, knock: 0.405, flap: 0.572, ratchet: 0.72,
 };
 
 export function createSound({ storageKey = 'splatz-sound', context, destination, autoUnlock = true } = {}) {
@@ -255,6 +256,48 @@ export function createSound({ storageKey = 'splatz-sound', context, destination,
 			tone(o, t, TRI, 880, 0, 0.04, 0.8);
 			tone(o, t + 0.035, TRI, 1320, 0, 0.045, 1);
 		},
+		// the jump scare: a face hits the glass, then a growl that climbs and is cut off
+		scare(o, t) {
+			thud(o, t, 230, 0.12, 0.7);
+			noise(o, t, BP, 1700, 0, 1.2, 0.02, 0.9);
+			tone(o, t, SIN, 1480, 0, 0.1, 0.3);
+			tone(o, t, TRI, 640, 430, 0.08, 0.8);
+			const at = t + 0.06, dur = 0.44, g = ctx.createGain();
+			const [lfo, depth] = wobble(g.gain, at, 21, 46, dur);
+			g.gain.value = 0.62; depth.value = 0.38;
+			lfo.stop(at + dur + 0.02);
+			g.connect(filt(thin(o, at, 400), at, LP, 1000, 3200, dur, 4));
+			tone(g, at, SAW, 104, 370, dur, 0.9, 'r');
+			tone(g, at, SQR, 208, 740, dur, 0.4, 'r');
+			tone(g, at, SAW, 157, 556, dur, 0.35, 'r');
+			noise(o, at, BP, 900, 2600, 2, dur, 0.22, 'r');
+		},
+		// knuckles on the machine: two raps on painted metal
+		knock(o, t) {
+			[0, 0.115].forEach((d, i) => {
+				const at = t + d, v = i ? 0.75 : 1;
+				thud(o, at, 260, 0.06, v * 0.45);
+				tone(o, at, TRI, 720, 540, 0.065, v * 0.9);
+				tone(o, at, SIN, 1240, 0, 0.045, v * 0.3);
+				noise(o, at, BP, 1500, 0, 1.4, 0.014, v * 0.7);
+			});
+		},
+		// the chute flap: pushed in, it springs back and claps shut twice
+		flap(o, t) {
+			tone(o, t, TRI, 520, 780, 0.07, 0.45, 'x', 0.004);
+			[[0.085, 1], [0.185, 0.5]].forEach(([d, v]) => {
+				const at = t + d;
+				noise(o, at, BP, 2300, 0, 1.6, 0.018, v);
+				tone(o, at, SQR, 930, 610, 0.03, v * 0.35);
+				tone(o, at, SIN, 1650, 0, 0.07, v * 0.3);
+				thud(o, at, 320, 0.04, v * 0.4);
+			});
+		},
+		// one tooth of the crank
+		ratchet(o, t) {
+			click(o, t, 1);
+			tone(o, t, TRI, 1150, 0, 0.03, 0.2);
+		},
 	};
 
 	// returns stop(): 80 ms fade
@@ -337,6 +380,6 @@ export function createSound({ storageKey = 'splatz-sound', context, destination,
 		ctx = bus = null;
 	}
 
-	const names = 'tap glass coinPick coinDrop crank crankLoop rattle chute peel jam soldOut toggle'.split(' ');
+	const names = 'tap glass coinPick coinDrop crank crankLoop rattle chute peel jam soldOut toggle scare knock flap ratchet'.split(' ');
 	return { play, unlock, setMuted, isMuted: () => !!muted, names, context: () => ctx, destroy };
 }

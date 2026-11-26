@@ -3,6 +3,7 @@ import * as chain from './chain.js';
 import * as wallet from './wallet.js';
 import * as ui from './ui.js';
 import * as sfx from './sfx.js';
+import { setupPlay } from './play.js';
 import { $, h, btn, eth } from './ui.js';
 import { addressUrl, chainInfo, collectionLink, contractAddress, fiftyCentPriceWei, preview, tokenLink, txUrl } from './config.js';
 
@@ -51,10 +52,11 @@ function soldOutSound(now) {
 
 function setupSound() {
   ui.onCue(sfx.play);
-  // Every button and button shaped link clicks. The coin and the sound button have sounds of their own.
+  // Every button and button shaped link clicks. The coin, the sound button and the parts of the machine
+  // that can be played with (data-play) have sounds of their own.
   document.addEventListener('click', (e) => {
     const b = e.target.closest?.('button, a.mbtn');
-    if (b && b.id !== 'coin' && b.id !== 'soundBtn') sfx.play('tap');
+    if (b && b.id !== 'coin' && b.id !== 'soundBtn' && !b.hasAttribute('data-play')) sfx.play('tap');
   });
   const b = $('soundBtn');
   if (!sfx.available()) return;
@@ -229,7 +231,9 @@ function renderStatic() {
 
 /* ---------- the pull flow ---------- */
 
-async function onCoin() {
+// held: the visitor carried the coin to the slot and dropped it in (play.js). Everything else is the same
+// as a tap on the coin, except that the coin was already heard being picked up and goes in from the hand.
+async function onCoin(held = false) {
   const state = mode();
   // Sold out means the coin is gone from the page. Guard anyway so nothing can start a pull.
   if (state === 'loading' || state === 'soldout') return;
@@ -237,9 +241,9 @@ async function onCoin() {
   if (S.busy) { sfx.play('tap'); showCrank(); return; }
   // One coin at a time. A second press from the keyboard while the coin is in flight is not another coin.
   if ($('coin').classList.contains('inserted')) return;
-  sfx.play('coinPick');
+  if (!held) sfx.play('coinPick');
   // The preview build has nothing to pull, so the coin flies without the slot and shake sounds.
-  await ui.coinInsert(state !== 'preview');
+  await ui.coinInsert(state !== 'preview', held);
   const closed = ui.coinReset;
   if (state === 'preview') {
     ui.showMessage('THE MACHINE OPENS SOON', [
@@ -551,7 +555,11 @@ function showPeel(card, hash) {
 async function start() {
   renderStatic();
   setupSound();
-  ui.setupGlassEgg();
+  // Free play never starts a pull by itself, and it waits while one is in flight, while the coin is on its way
+  // in or out of sight, and while a view is open.
+  const blocked = () => S.busy || S.landing || ui.modalOpen() || $('coin').matches('.inserted, .away');
+  // The jump scare waits too, and stays away where the CLOSED sign or the SOLD OUT stamp would cover the face.
+  ui.setupGlassEgg(() => !blocked() && !['closed', 'soldout'].includes(mode()));
   try {
     await loadCards();
   } catch (err) {
@@ -560,7 +568,13 @@ async function start() {
     return;
   }
   render();
-  $('coin').addEventListener('click', onCoin);
+  setupPlay({
+    blocked,
+    coinLive: () => ['open', 'preview'].includes(mode()),
+    coinMoves: () => ['open', 'preview', 'closed'].includes(mode()),
+    dropCoin: () => onCoin(true),
+  });
+  $('coin').addEventListener('click', () => onCoin());
   $('retryBtn').addEventListener('click', refresh);
   window.addEventListener('resize', fitNotice);
   if (preview) return;

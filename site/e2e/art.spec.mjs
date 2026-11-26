@@ -134,7 +134,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 1024, height: 768
   });
 }
 
-// The words of the hint, the bandage and the padlock, as boxes on the page.
+// The words of the hint and the bandage, as boxes on the page. (The padlock that used to hang here is gone.)
 const hintAndDecor = (page) => page.evaluate(() => {
   const box = (r) => ({ left: r.left, right: r.right, top: r.top, bottom: r.bottom });
   const range = document.createRange();
@@ -142,7 +142,6 @@ const hintAndDecor = (page) => page.evaluate(() => {
   return {
     words: [...range.getClientRects()].map(box),
     patch: box(document.querySelector('#machine .m-front .m-patch').getBoundingClientRect()),
-    lock: box(document.querySelector('#machine .m-front .m-lock').getBoundingClientRect()),
     glass: box(document.getElementById('glass').getBoundingClientRect()),
   };
 });
@@ -151,19 +150,22 @@ const overlap = (p, q) => p.left < q.right && q.left < p.right && p.top < q.bott
 for (const viewport of [{ width: 1280, height: 900 }, { width: 1280, height: 720 }, { width: 375, height: 812 }, { width: 320, height: 568 }]) {
   test.describe(`tap the glass hint on a ${viewport.width} by ${viewport.height} screen`, () => {
     test.use({ viewport });
-    test('the hint is clear of the bandage and the padlock', async ({ page }) => {
+    test('the hint is clear of the bandage, sits in the middle of the glass, and there is no padlock', async ({ page }) => {
       await openMachine(page);
       await expectPulled(page, 0);
       await expect(page.locator('#eeTapHint')).toBeVisible();
-      const { words, patch, lock, glass } = await hintAndDecor(page);
+      const { words, patch, glass } = await hintAndDecor(page);
+      await expect(page.locator('#machine .m-lock')).toHaveCount(0);
       expect(words.length).toBeGreaterThan(0);
       for (const w of words) {
         expect(overlap(w, patch), 'the hint does not touch the bandage').toBe(false);
-        expect(overlap(w, lock), 'the hint does not touch the padlock').toBe(false);
         expect(w.left).toBeGreaterThan(glass.left);
         expect(w.right).toBeLessThan(glass.right);
         expect(w.bottom - w.top, 'the hint is big enough to read').toBeGreaterThanOrEqual(9);
       }
+      // With the padlock gone the hint is centred over the pile instead of squeezed toward the bandage.
+      const mid = (Math.min(...words.map((w) => w.left)) + Math.max(...words.map((w) => w.right))) / 2;
+      expect(Math.abs(mid - (glass.left + glass.right) / 2)).toBeLessThan((glass.right - glass.left) * 0.04);
     });
   });
 }
