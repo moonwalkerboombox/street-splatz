@@ -13,3 +13,4 @@ site/test-results/
 site/playwright-report/
 .wrangler/
 site/.e2e/
+__pycache__/
