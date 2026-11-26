@@ -10,7 +10,7 @@
     "abi": "npm --prefix contracts run abi && node scripts/sync-abi.mjs",
     "abi:check": "node scripts/sync-abi.mjs --check",
     "test:contracts": "npm --prefix contracts test && npm run abi:check",
-    "test:e2e": "npm run build:assets && npm --prefix site run test:e2e",
+    "test:e2e": "npm run build:assets && npm --prefix site run test:e2e --",
     "test": "npm run test:contracts && npm run test:e2e",
     "anvil": "npm --prefix contracts run anvil",
     "deploy:local": "node scripts/deploy-local.mjs",

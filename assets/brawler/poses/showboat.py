@@ -70,4 +70,5 @@ def draw(ctx):
         head=HEAD, radius=R, tilt=-8, face=(-7, 0),
         back=back, legs=legs, shoes=shoes, front=[],
         fx=fx, shadows=[(152, 82), (384, 82)],
+        keep_clear=[(40, 108, 160, 214), (360, 92, 480, 210)],   # both raised fists
     )

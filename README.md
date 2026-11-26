@@ -73,7 +73,9 @@ npm run build:assets     # refreshes the site files and the provenance fingerpri
 - `assets/png/NNN.png`: the card at 1040 by 1520, lossless. This is the token image the metadata points at, and what the provenance fingerprint is made from.
 - `assets/web/NNN.webp`: the same card at the same size as WebP, about a third of the weight. The page shows this one in The Peel.
 
-The traits, names and numbers in `assets/metadata/` are fixed and are never written by the generator. The same tool versions give the same bytes on every run. Any change to a PNG changes the fingerprint in `assets/provenance.json`, so settle the art before the contract is deployed. `assets/brawler/PARTS.md` explains how the poses, eyes and mouths plug in.
+It also writes `assets/web/share.jpg`, the 1200 by 630 link preview (`og:image`): three Street Legends side by side.
+
+The traits, names and numbers in `assets/metadata/` are fixed and are never written by the generator. The same tool versions give the same bytes on every run. Any change to a PNG changes the fingerprint in `assets/provenance.json`, so settle the art before the contract is deployed. The card files keep their names when the art changes and `_headers` lets browsers and Cloudflare keep `/img/*` for a day, so if new art is ever deployed over a site people have already visited, purge the Cloudflare cache for `/img/*` right after the deploy. `assets/brawler/PARTS.md` explains how the poses, eyes and mouths plug in.
 
 ## Going live
 

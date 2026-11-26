@@ -1,6 +1,7 @@
 // Turns the untouched card set in assets/ into the files the site serves.
 // Writes site/public/img/NNN.png (the full size token image, from assets/png),
 // site/public/img/NNN.webp (the lighter copy the page shows, from assets/web),
+// site/public/img/share.jpg (the 1200 by 630 link preview image, from assets/web),
 // site/public/meta/N.json, site/public/meta/collection.json, site/public/cards.json and
 // assets/provenance.json. Fails if the set is not exactly 100 cards in a 4 / 23 / 55 / 18
 // rarity split, or if a card image is not 1040 by 1520.
@@ -36,9 +37,19 @@ function webpSize(buf) {
   if (kind === 'VP8L') { const b = buf.readUInt32LE(21); return [(b & 0x3fff) + 1, ((b >> 14) & 0x3fff) + 1]; }
   return null;
 }
-function checkSize(what, size) {
-  if (!size || size[0] !== CARD_W || size[1] !== CARD_H) {
-    throw new Error(`${what} is ${size ? size.join(' by ') : 'not a readable image'}, expected ${CARD_W} by ${CARD_H}. Run npm run cards.`);
+function jpegSize(buf) {
+  if (buf.readUInt16BE(0) !== 0xffd8) return null;
+  for (let i = 2; i + 9 < buf.length;) {
+    if (buf[i] !== 0xff) return null;
+    const m = buf[i + 1];
+    if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return [buf.readUInt16BE(i + 7), buf.readUInt16BE(i + 5)];
+    i += 2 + buf.readUInt16BE(i + 2);
+  }
+  return null;
+}
+function checkSize(what, size, w = CARD_W, h = CARD_H) {
+  if (!size || size[0] !== w || size[1] !== h) {
+    throw new Error(`${what} is ${size ? size.join(' by ') : 'not a readable image'}, expected ${w} by ${h}. Run npm run cards.`);
   }
 }
 
@@ -84,6 +95,11 @@ for (let n = 1; n <= TOTAL; n++) {
 for (const [tier, want] of Object.entries(EXPECTED)) {
   if (counts[tier] !== want) throw new Error(`rarity split wrong: ${tier} has ${counts[tier]}, expected ${want}`);
 }
+
+// Link preview image (og:image). Not part of the token set or the fingerprint.
+const share = readFileSync(join(root, 'assets', 'web', 'share.jpg'));
+checkSize('assets/web/share.jpg', jpegSize(share), 1200, 630);
+writeFileSync(join(pub, 'img', 'share.jpg'), share);
 
 // One fingerprint for the whole set: sha256 over the per file sha256 hex strings,
 // in order png 001, metadata 001, png 002, metadata 002 and so on, using the untouched source files.

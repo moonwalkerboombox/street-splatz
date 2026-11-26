@@ -76,6 +76,28 @@ test('card art is served as an image, and a missing image is not', async () => {
   expect(missing.headers.get('content-type')).toMatch(/^text\/html/);
 });
 
+test('the link preview image the page names is served, landscape and light', async () => {
+  const html = await (await get('/')).text();
+  const og = (name) => html.match(new RegExp(`<meta property="og:${name}" content="([^"]*)"`))?.[1];
+  expect(new URL(og('image')).pathname).toBe('/img/share.jpg');
+  expect([og('image:width'), og('image:height')]).toEqual(['1200', '630']);
+  expect(html).toContain('<meta name="twitter:card" content="summary_large_image">');
+  const res = await get('/img/share.jpg');
+  expect(res.status).toBe(200);
+  expect(res.headers.get('content-type')).toBe('image/jpeg');
+  expect(res.headers.get('access-control-allow-origin')).toBe('*');
+  const buf = Buffer.from(await res.arrayBuffer());
+  expect(buf.length).toBeLessThan(600_000);
+  // Width and height from the JPEG frame header.
+  let i = 2, size = null;
+  while (i + 9 < buf.length && !size) {
+    const m = buf[i + 1];
+    if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) size = [buf.readUInt16BE(i + 7), buf.readUInt16BE(i + 5)];
+    else i += 2 + buf.readUInt16BE(i + 2);
+  }
+  expect(size).toEqual([1200, 630]);
+});
+
 test('no rule in _headers forces a Content-Type', async () => {
   // A forced type also lands on the "not found" page for that folder. Cloudflare picks the type from the file name.
   const res = await get('/_headers');

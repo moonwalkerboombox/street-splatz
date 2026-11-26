@@ -8,6 +8,8 @@ Writes:
                            and the files the provenance fingerprint is made from.
     assets/web/NNN.webp    the same cards at the same size as WebP (quality 92), about a third
                            of the weight. The site shows these in The Peel.
+    assets/web/share.jpg   the 1200 x 630 link preview image (og:image): three Street Legends
+                           on the site's dark background.
 
 Every step is deterministic: the same generator, Chromium and Pillow versions give the same
 bytes. Needs Playwright's Chromium (NODE_PATH must reach `playwright`) and Pillow with WebP.
@@ -24,6 +26,21 @@ from PIL import Image  # noqa: E402
 TOTAL = 100
 SIZE = (1040, 1520)
 WEBP = dict(quality=92, method=6)
+SHARE_SIZE = (1200, 630)
+SHARE_CARDS = (("056", 540, 80), ("098", 540, 751), ("016", 596, None))   # back to front: card, height, x
+
+
+def make_share(png_dir, out):
+    """Link preview image: a small fan of legend cards, centre one in front. Deterministic."""
+    W, H = SHARE_SIZE
+    sheet = Image.new("RGB", SHARE_SIZE, (10, 10, 10))
+    for name, h, x in SHARE_CARDS:
+        card = Image.open(os.path.join(png_dir, name + ".png")).convert("RGBA")
+        w = round(h * SIZE[0] / SIZE[1])
+        card = card.resize((w, h), Image.LANCZOS)
+        sheet.paste(card, ((W - w) // 2 if x is None else x, (H - h) // 2), card)
+    sheet.save(out, "JPEG", quality=88, optimize=True)
+    return os.path.getsize(out)
 
 
 def main():
@@ -49,7 +66,7 @@ def main():
     for d, ext in ((png_dir, ".png"), (web_dir, ".webp")):
         os.makedirs(d, exist_ok=True)
         for f in os.listdir(d):                     # drop anything that is not part of the set
-            if f.endswith(ext) and f[:-len(ext)] not in names:
+            if f.endswith(ext) and f[:-len(ext)] not in names:   # (share.jpg is rewritten below)
                 os.remove(os.path.join(d, f))
     png_bytes = web_bytes = 0
     for name in names:
@@ -64,9 +81,11 @@ def main():
         im.save(web, "WEBP", **WEBP)
         png_bytes += os.path.getsize(raw)
         web_bytes += os.path.getsize(web)
+    share_bytes = make_share(png_dir, os.path.join(web_dir, "share.jpg"))
     if not a.work:
         shutil.rmtree(work, ignore_errors=True)
-    print("%d cards: %s %.1f MB, %s %.1f MB" % (TOTAL, png_dir, png_bytes / 1e6, web_dir, web_bytes / 1e6))
+    print("%d cards: %s %.1f MB, %s %.1f MB, share.jpg %d KB"
+          % (TOTAL, png_dir, png_bytes / 1e6, web_dir, web_bytes / 1e6, share_bytes // 1000))
 
 
 if __name__ == "__main__":

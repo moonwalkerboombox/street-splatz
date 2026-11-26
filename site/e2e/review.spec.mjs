@@ -199,6 +199,28 @@ test.describe('The Peel on a phone held sideways, 812 by 375', () => {
   });
 });
 
+// Laptops and tablets: every button is on screen with nothing to scroll, and the card is bigger than the
+// old 230 wide wherever there is room. Under 950 tall the stat bars give way (the stats are printed on the
+// card), on taller screens they stay.
+for (const [name, viewport, minWidth, stats] of [['a laptop, 1280 by 800', { width: 1280, height: 800 }, 250, false], ['a laptop, 1280 by 900', { width: 1280, height: 900 }, 280, false], ['a tablet, 768 by 1024', { width: 768, height: 1024 }, 250, true], ['a desktop, 1920 by 1080', { width: 1920, height: 1080 }, 280, true]]) {
+  test.describe(`The Peel on ${name}`, () => {
+    test.use({ viewport });
+    test('shows a big card and every button with nothing to scroll', async ({ page, who, problems }) => {
+      await addWallet(page, who.buyer);
+      await openMachine(page);
+      const peel = await pullThroughSite(page);
+      await expect(peel.img).toBeInViewport({ ratio: 1 });
+      if (stats) await expect(modal(page).locator('.rstats')).toBeInViewport({ ratio: 1 });
+      else await expect(modal(page).locator('.rstats')).toBeHidden();
+      await expect(button(page, 'CRANK AGAIN')).toBeInViewport({ ratio: 1 });
+      await expect(button(page, 'Close')).toBeInViewport({ ratio: 1 });
+      expect(await page.locator('#modal .modal').evaluate((el) => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(1);
+      expect(await modal(page).locator('.rcard').evaluate((el) => el.offsetWidth)).toBeGreaterThanOrEqual(minWidth);
+      expect(problems).toEqual([]);
+    });
+  });
+}
+
 test.describe('The Peel on a tall phone, 375 by 812', () => {
   test.use({ viewport: { width: 375, height: 812 }, hasTouch: true, isMobile: true });
   test('shows the card, the stats and every button with nothing below the fold', async ({ page, who }) => {

@@ -3,14 +3,16 @@ wall: one sneaker kicked up with its sole flat on the brick, the other planted
 out in front, the near hand tucked behind the head with the elbow resting on the
 wall, the far hand flipping a coin. No crossed arms, nothing in front of the face.
 
-Silhouette, left to right: wall | elbow wedge over the headband tails | tipped
-back ball | open hand with the coin in the air above it.
+Silhouette, left to right: wall | bent near arm (upper arm out of the ball's side,
+elbow up, forearm back over the crown) | tipped back ball | open hand with the
+coin in the air above it.
 
   prop   brick wall end (clipped to the art window)
-  back   near arm behind the head (elbow, forearm, wrap, knuckles peeking over
-         the ball), far arm, wrap, open palm, coin + motion marks
-  legs   planted leg (seeded plaster / scuffs), kicked up thigh
-  shoes  planted sneaker, kicked up shin, sneaker with its sole on the wall
+  back   near arm behind the head (knuckles curled over the crown, forearm, wrap,
+         upper arm on top at the elbow), far arm, wrap, open palm, coin + motion marks
+  legs   planted leg (seeded plaster / scuffs), kicked up shin, thigh in front ending
+         in the knee
+  shoes  planted sneaker, sneaker with its sole on the wall
   fx     glint ticks beside the coin (tiers above Pavement Card)
 
 Card space coordinates (520 x 760). See ../PARTS.md.
@@ -26,11 +28,11 @@ BRICK, BRICK_ALT, BRICK_SHADE, BRICK_HI, MORTAR = "#46387F", "#544594", "#2A1F5C
 GOLD, GOLD_SHADE, GOLD_HI = "#FFD23F", "#D9861F", "#FFF3B0"
 
 # joints
-F_SH, F_EL, F_WR = (344, 288), (376, 346), (406, 314)      # far arm: shoulder, elbow, wrist
-PALM = (422, 280)
-COIN = (424, 192)
-N_SH, N_EL, N_WR = (190, 194), (96, 160), (170, 124)      # near arm: hand behind the head
-N_FIST = (200, 136)
+F_SH, F_EL, F_WR = (344, 288), (372, 346), (396, 314)      # far arm: shoulder, elbow, wrist
+PALM = (412, 280)
+COIN = (414, 192)
+N_SH, N_EL, N_WR = (184, 246), (102, 150), (170, 118)      # near arm: hand behind the head
+N_FIST = (203, 127)
 P_HIP, P_ANK = (310, 324), (356, 428)                      # planted leg
 K_HIP, K_KNEE, K_ANK = (252, 326), (288, 400), (208, 404)  # kicked up leg
 
@@ -125,10 +127,10 @@ def draw(ctx):
     # ---- back: far arm out to the side, open palm, coin in the air
     back = [
         ctx.shaded(L(F_SH, F_EL, 25, 24, 10, 3), dx=6, dy=-8, rim=True),
-        ctx.shaded(L(F_EL, F_WR, 24, 22, 4, 12), dx=7, dy=-6, rim=True, extra=hi(402, 330, -45)),
-        ctx.line("M360,344 q12,-2 16,-16", 3.2),                             # elbow fold
+        ctx.shaded(L(F_EL, F_WR, 24, 22, 4, 12), dx=7, dy=-6, rim=True, extra=hi(392, 330, -45)),
+        ctx.line("M356,344 q12,-2 16,-16", 3.2),                             # elbow fold
     ]
-    back += [ctx.wrap((402, 319), 47, 50), _palm(ctx, PALM), _coin(ctx, COIN, rng)]
+    back += [ctx.wrap((392, 319), 47, 50), _palm(ctx, PALM), _coin(ctx, COIN, rng)]
 
     # ---- legs: planted leg out in front; kicked up leg bends back to the wall
     legs = [
@@ -140,22 +142,30 @@ def draw(ctx):
         legs.append(ctx.plaster((338, 386), rng.choice((0, 20, -20))))
     elif sticker == "scuffs":
         legs.append(ctx.scuffs((330, 380), -10))
-    legs.append(ctx.shaded(L(K_HIP, K_KNEE, 27, 25, 4, 6), dx=7, dy=-4, rim=True))
+    # kicked up (near) leg: the shin runs back to the wall behind, the thigh comes down
+    # from under the ball in front of it and ends in the knee, so the leg reads as one
+    # bent limb joined to the body
+    legs += [
+        ctx.shaded(L(K_KNEE, K_ANK, 24, 22, 5, 3), dx=5, dy=-7, rim=True, extra=hi(248, 392, 4)),
+        ctx.shaded(L(K_HIP, K_KNEE, 28, 26, 4, 8), dx=7, dy=-5, rim=True, extra=hi(286, 372, 60)),
+        ctx.line("M300,386 q8,12 -2,24", 3.2),                               # knee cap
+    ]
     shoes = [
         ctx.shoe((P_ANK[0], 428)),
-        ctx.shaded(L(K_KNEE, K_ANK, 25, 22, 5, 3), dx=5, dy=-7, rim=True, extra=hi(262, 392, 4)),
-        ctx.line("M301,388 q6,10 -3,21", 3.2),                               # knee cap
         ctx.shoe(K_ANK, rot=90, s=0.9),
     ]
 
     # ---- near arm: hand behind the head, elbow up over the wall (drawn behind the ball)
+    # The forearm runs back over the crown to a hand cupping the back of the head
+    # (knuckles curled over the rim); the upper arm comes out of the ball's side and
+    # sits on top at the elbow, so the arm clearly grows from the body.
     near = [
-        ctx.fist(N_FIST, 62, 0.8),
-        ctx.shaded(L(N_SH, N_EL, 25, 25, 3, 8), dx=6, dy=-8, rim=True),
-        ctx.shaded(L(N_EL, N_WR, 26, 23, 6, 3), dx=6, dy=-8, rim=True, extra=hi(140, 128, -26)),
-        ctx.line("M116,172 Q142,172 172,156", 3.4),                             # elbow fold
-        ctx.line("M108,140 l7,6 M118,134 l6,6", 2.6),                        # elbow scuffs
-        ctx.wrap(N_WR, 244, 46),
+        ctx.fist(N_FIST, 105, 0.78),
+        ctx.shaded(L(N_EL, N_WR, 24, 22, 3, 6), dx=6, dy=-8, rim=True, extra=hi(140, 124, -22)),
+        ctx.wrap(N_WR, 238, 46),
+        ctx.shaded(L(N_SH, N_EL, 27, 26, 4, 12), dx=6, dy=-8, rim=True, extra=hi(132, 170, 50)),
+        ctx.line("M150,214 q-22,-10 -30,-36", 3.2),                          # tricep line
+        ctx.line("M92,170 l7,6 M100,160 l6,6", 2.6),                         # elbow scuffs
     ]
     back = near + back
     front = []
@@ -170,4 +180,5 @@ def draw(ctx):
         head=HEAD, radius=R, tilt=TILT, face=(0, -3),
         prop=prop, back=back, legs=legs, shoes=shoes, front=front, fx=fx,
         shadows=[(382, 80), (196, 46)],
+        keep_clear=[(360, 160, 486, 270)],      # coin, sparkle, glints and the catching hand
     )

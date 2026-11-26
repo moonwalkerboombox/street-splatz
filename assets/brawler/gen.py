@@ -563,6 +563,16 @@ def _prop(kind, x, y, rng):
             f'<path d="M{x + 12},{y + 46} v14 M{x + 50},{y + 46} v9" stroke="#B48CFF" stroke-width="4" stroke-linecap="round" opacity=".6"/>')
 
 
+def _prop_box(kind, x, y):
+    """Bounding box (x0, y0, x1, y1) of a wall prop placed at x,y, drips and ledges included."""
+    return {"window": (x - 7, y - 2, x + 69, y + 55), "poster": (x - 4, y - 5, x + 58, y + 68),
+            "vent": (x - 2, y - 2, x + 62, y + 66)}.get(kind, (x - 3, y - 2, x + 65, y + 62))
+
+
+def _hits(a, b):
+    return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+
+
 def background(ctx, pose):
     p, lvl = ctx.pal, ctx.level
     gl = p.glow
@@ -583,7 +593,15 @@ def background(ctx, pose):
             o.append(f'<rect x="{bx}" y="{by}" width="56" height="14" fill="#3A2A78" opacity=".55"/>')
     pipe_left = rng.random() < .5
     kind = rng.choice(("window", "poster", "vent", "tag"))
-    wall_prop = _prop(kind, (404 if pipe_left else 52) + rng.randint(-6, 6), 98 + rng.randint(0, 22), rng)
+    wx, wy = (404 if pipe_left else 52) + rng.randint(-6, 6), 98 + rng.randint(0, 22)
+    # a pose can ask for boxes the wall prop must stay out of (Lean's coin, Showboat's raised
+    # fist): lift the prop to the top of the panel, else leave it out. _prop is always called
+    # once so the seeded stream, and every other card, stays the same.
+    clear = pose.get("keep_clear") or []
+    spot = next((s for s in ((wx, wy), (wx, 88)) if not any(_hits(_prop_box(kind, *s), b) for b in clear)), None)
+    wall_prop = _prop(kind, *(spot or (wx, wy)), rng)
+    if spot is None:
+        wall_prop = ""
     # street lamp glow + halftone ring
     ht = ctx.halftone(gl["dots"])
     k = .86 if lvl == 0 else 1

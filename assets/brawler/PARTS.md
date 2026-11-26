@@ -67,6 +67,9 @@ dict(
     shadows=[(cx, rx)],   # contact shadow ellipses on the ground, default one under the head
     flip=False,           # True mirrors headband + face so the character faces screen left
     face=(0, 0),          # head-local shift applied to eyes and mouth together
+    keep_clear=[(x0, y0, x1, y1)],  # card-space boxes the seeded wall prop must stay out of
+                          #   (raised fists, Lean's coin); the engine lifts the prop to the
+                          #   top of the panel, or leaves it out
 )
 ```
 

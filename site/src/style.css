@@ -466,6 +466,24 @@ dialog::backdrop{background:rgba(0,0,0,.9);backdrop-filter:blur(6px);}
   .rbtns .mbtn.p,.rbtns .mbtn:only-child,.rbtns .mbtn.p + .mbtn:last-child{grid-column:1/-1;}
   .rbtns .mbtn.bl,.rbtns .mbtn.s{font-size:1rem;letter-spacing:1.5px;padding:12px 6px;}
 }
+/* The Peel on a laptop window 781 to 950 tall: the same layout as a short screen (the stats are printed on the
+   card, the two small buttons side by side), with a wider dialog, so a bigger card and every button fit unscrolled. */
+@media(min-height:781px) and (max-height:950px) and (min-width:601px){
+  dialog:has(.peel){max-width:500px;}
+  .rstats{display:none;}
+  .rcardwrap{margin-bottom:12px;}
+  .rcard{width:min(300px,70%,max(180px,calc((94vh - 378px)*.684)));width:min(300px,70%,max(180px,calc((94dvh - 378px)*.684)));}
+  .rtx{margin-bottom:12px;}
+  .rbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .rbtns .mbtn{display:flex;align-items:center;justify-content:center;}
+  .rbtns .mbtn.p,.rbtns .mbtn:only-child,.rbtns .mbtn.p + .mbtn:last-child{grid-column:1/-1;}
+  .rbtns .mbtn.bl,.rbtns .mbtn.s{font-size:1rem;letter-spacing:1.5px;padding:12px 6px;}
+}
+/* The Peel on a tall screen (tablet, desktop): the stat bars stay and the card grows with the height left. */
+@media(min-height:951px) and (min-width:601px){
+  dialog:has(.peel){max-width:500px;}
+  .rcard{width:min(340px,70%,max(200px,calc((94vh - 580px)*.684)));width:min(340px,70%,max(200px,calc((94dvh - 580px)*.684)));}
+}
 /* The Peel on a short phone: the card is sized from the height left over, which counts on the head being two lines.
    So the name gets the first line to itself, a touch smaller on the narrowest phones, and the number sits with the
    tier under it. Every one of the 100 names then fits on its line in any font, and a long one can no longer push the
