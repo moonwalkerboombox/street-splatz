@@ -2,6 +2,7 @@
 import * as chain from './chain.js';
 import * as wallet from './wallet.js';
 import * as ui from './ui.js';
+import * as sfx from './sfx.js';
 import { $, h, btn, eth } from './ui.js';
 import { addressUrl, chainInfo, collectionLink, contractAddress, fiftyCentPriceWei, preview, tokenLink, txUrl } from './config.js';
 
@@ -23,7 +24,52 @@ const S = {
   run: null,       // token of the pull that owns the page. Cleared when the visitor stops waiting
   crank: null,     // what the Cranking view last showed, so it can be reopened
   shown: null,     // what the open Pull or Approve view was drawn with: { price, remaining }
+  landing: false,  // the visitor's own pull has landed and its gumball or The Peel is on screen
+  soldSaid: false, // the sold out sound has played. It plays once
+  soldDue: false,  // the sold out sound is waiting for The Peel to close
 };
+
+/* ---------- sound ---------- */
+
+// The four tiers in the order sound.js numbers them, plainest first.
+const TIERS = ['Pavement Card', 'Fresh Drop', 'Block Hitter', 'Street Legend'];
+
+// The crank is heard while a pull is pending and its Cranking view is open.
+let stopCrank = null;
+function crankOn() { if (!stopCrank) stopCrank = sfx.crank(); }
+function crankOff() { stopCrank?.(); stopCrank = null; }
+
+// Once, when the last card goes in front of the visitor. If it was the visitor's own pull, the sound
+// waits until The Peel is closed and the stamped machine comes into view.
+function soldOutSound(now) {
+  if (S.soldSaid) return;
+  if (S.landing && !now) { S.soldDue = true; return; }
+  S.soldSaid = true;
+  S.soldDue = false;
+  sfx.play('soldOut');
+}
+
+function setupSound() {
+  ui.onCue(sfx.play);
+  // Every button and button shaped link clicks. The coin and the sound button have sounds of their own.
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest?.('button, a.mbtn');
+    if (b && b.id !== 'coin' && b.id !== 'soundBtn') sfx.play('tap');
+  });
+  const b = $('soundBtn');
+  if (!sfx.available()) return;
+  sfx.onLost(() => { b.hidden = true; });
+  // Pressed means muted. The name says which state it is in.
+  const show = () => {
+    const off = sfx.muted();
+    b.setAttribute('aria-pressed', String(off));
+    b.setAttribute('aria-label', off ? 'Mute sound. Sound is off' : 'Mute sound. Sound is on');
+    b.title = off ? 'Sound is off' : 'Sound is on';
+  };
+  show();
+  b.hidden = false;
+  b.addEventListener('click', () => { sfx.setMuted(!sfx.muted()); show(); });
+}
 
 /* ---------- reading and rendering ---------- */
 
@@ -40,8 +86,10 @@ async function loadCards() {
 async function refresh() {
   if (preview) return null;
   try {
+    const was = S.machine?.remaining;
     S.machine = await chain.readMachine();
     S.unreachable = false;
+    if (was > 0 && S.machine.remaining === 0) soldOutSound();
   } catch (err) {
     console.warn('machineState read failed', err);
     S.unreachable = true;
@@ -185,9 +233,13 @@ async function onCoin() {
   const state = mode();
   // Sold out means the coin is gone from the page. Guard anyway so nothing can start a pull.
   if (state === 'loading' || state === 'soldout') return;
-  if (state === 'error') { refresh(); return; }
-  if (S.busy) { showCrank(); return; }
-  await ui.coinInsert();
+  if (state === 'error') { sfx.play('tap'); refresh(); return; }
+  if (S.busy) { sfx.play('tap'); showCrank(); return; }
+  // One coin at a time. A second press from the keyboard while the coin is in flight is not another coin.
+  if ($('coin').classList.contains('inserted')) return;
+  sfx.play('coinPick');
+  // The preview build has nothing to pull, so the coin flies without the slot and shake sounds.
+  await ui.coinInsert(state !== 'preview');
   const closed = ui.coinReset;
   if (state === 'preview') {
     ui.showMessage('THE MACHINE OPENS SOON', [
@@ -195,6 +247,7 @@ async function onCoin() {
       `${S.total} Splatz are loaded behind the glass. Come back when the coin slot lights up.`,
     ], [], { closed });
   } else if (state === 'closed') {
+    sfx.play('jam');
     ui.showMessage('CLOSED FOR NOW', ['The Machine is closed for now.', 'No coins are being taken. Check back soon.'], [], { closed });
   } else {
     showPull();
@@ -251,6 +304,7 @@ async function connectWith(w) {
     showApprove();
   } catch (err) {
     console.warn('connect failed', err);
+    sfx.play('jam');
     const kind = err?.kind === 'network' ? 'network' : chain.errorKind(err);
     ui.showMessage('NOT CONNECTED', {
       rejected: 'The wallet request was closed, so nothing is connected.',
@@ -326,10 +380,11 @@ function showCrank(step, hash) {
   if (step != null) S.crank = { step, hash };
   // While the page waits for the wallet, say where to look and offer a way out of a wait that never ends.
   const waiting = S.crank.step === 0;
+  if (S.busy && S.crank.step < 3) crankOn();
   ui.openModal('THE MACHINE IS CRANKING', ui.crankView(CRANK_STEPS, S.crank.step, S.crank.hash && txUrl(S.crank.hash), waiting ? {
     hint: 'Open your wallet to approve the pull.',
     action: btn('STOP WAITING', stopWaiting, 's'),
-  } : {}), { closed: ui.coinReset });
+  } : {}), { closed: () => { crankOff(); ui.coinReset(); } });
 }
 
 // The wallet never answered (for example the wallet app was put in the background on a phone).
@@ -339,6 +394,7 @@ function stopWaiting() {
   S.run = null;
   S.busy = false;
   ui.crankHandle(false);
+  crankOff();
   ui.showMessage('STOPPED WAITING', [
     'The page stopped waiting for your wallet. Nothing was sent from this page.',
     'If the request is still open in your wallet, reject it there before you try again, so you do not pay twice. If you approve it instead, that pull still goes through.',
@@ -386,8 +442,11 @@ async function drop(shownPrice) {
     });
     // A newer pull owns the page. This one landed, so just show the new numbers.
     if (!mine()) { refresh(); return; }
+    crankOff();
     const card = S.cardById.get(id);
     if (!card) throw Object.assign(new Error(`card ${id} not in cards.json`), { kind: 'unread', hash });
+    // Fetch the card art now, so it is ready when The Peel opens.
+    ui.preload(card.img);
     if (ui.modalOpen()) { showCrank(3, hash); await ui.wait(700); }
     S.busy = false;
     S.run = null;
@@ -395,6 +454,7 @@ async function drop(shownPrice) {
     // The coin is in the machine now. It comes back when The Peel is closed, not while the gumball drops.
     ui.coinAway();
     ui.closeModal({ quiet: true });
+    S.landing = true;
     await Promise.all([ui.dropGumball(card.color), refresh()]);
     showPeel(card, hash);
   } catch (err) {
@@ -403,7 +463,9 @@ async function drop(shownPrice) {
     if (!mine()) return;
     S.busy = false;
     S.run = null;
+    S.landing = false;
     ui.crankHandle(false);
+    crankOff();
     await showPullError(err, err?.hash || sentHash);
   }
 }
@@ -414,7 +476,11 @@ async function showPullError(err, hash) {
   const txLine = link ? h('p', { class: 'msg' }, h('a', { href: link, target: '_blank', rel: 'noopener' }, 'View the transaction')) : null;
   const retry = btn('TRY AGAIN', () => showApprove(), 'p', true);
   const opts = { closed: ui.coinReset };
+  const said = S.soldSaid;
   if (kind !== 'offline') await refresh();
+  // The machine jams, except when it is empty: that has a sound of its own. It may have just played, if this
+  // reading is the one that found the last card gone (someone else took it while the wallet was open).
+  if (kind === 'soldout') soldOutSound(true); else if (S.soldSaid === said) sfx.play('jam');
   switch (kind) {
     case 'rejected':
       return ui.showMessage('NO COIN DROPPED', 'You closed the wallet request. Nothing was sent and nothing was charged.', [retry], opts);
@@ -453,20 +519,38 @@ async function showPullError(err, hash) {
 function showPeel(card, hash) {
   const again = mode() === 'open';
   const view = tokenLink(card.id);
+  // The sound goes with the card art. The art was fetched ahead, so as a rule that is the moment the view
+  // opens. If the art is slow the sound waits for it, or for the note that says it did not load, but not
+  // longer than two seconds and never past the closing of the view.
+  let said = false;
+  const reveal = () => {
+    if (said) return;
+    said = true;
+    sfx.play('peel', { tier: Math.max(0, TIERS.indexOf(card.rarity)) });
+  };
+  setTimeout(reveal, 2000);
   ui.openModal('THE PEEL', ui.peelView({
-    card, statNames: S.data.statNames, txHash: hash, txLink: txUrl(hash),
+    card, statNames: S.data.statNames, txHash: hash, txLink: txUrl(hash), onArt: reveal,
     actions: [
       again ? btn('CRANK AGAIN', () => { ui.closeModal(); setTimeout(onCoin, 60); }, 'p', true) : null,
       view ? ui.linkBtn(view.label, view.url) : null,
       btn('Close', ui.closeModal, 's', !again),
     ],
-  }), { closed: () => { ui.coinReset(); ui.clearGumball(); } });
+  }), {
+    closed: () => {
+      said = true;
+      ui.coinReset(); ui.clearGumball();
+      S.landing = false;
+      if (S.soldDue) soldOutSound();
+    },
+  });
 }
 
 /* ---------- start ---------- */
 
 async function start() {
   renderStatic();
+  setupSound();
   ui.setupGlassEgg();
   try {
     await loadCards();

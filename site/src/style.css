@@ -19,6 +19,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .wcon{display:flex;align-items:center;gap:8px;background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:7px 16px;font-size:.85rem;color:#999;}
 .wdot,.wdg{width:8px;height:8px;border-radius:50%;background:#0c6;animation:pulse 2s infinite;flex-shrink:0;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+/* The sound button. Pressed means muted: the waves give way to a cross and the speaker goes grey. */
+.snd{width:44px;height:44px;flex-shrink:0;padding:0;display:flex;align-items:center;justify-content:center;background:#4330A6;border:2px solid #7B66E0;border-radius:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s,border-color .2s;}
+.snd svg{display:block;width:32px;height:32px;pointer-events:none;}
+.snd:hover{background:#5B3FD0;}
+.snd[aria-pressed="true"]{background:#1c1c1c;border-color:#3a3a3a;}
+.snd[aria-pressed="true"]:hover{background:#262626;}
+.snd[aria-pressed="true"] .snd-body{fill:#8D85B3;}
+.snd[aria-pressed="true"] .snd-lit{stroke:#EFECF8;}
+.snd[aria-pressed="true"] .snd-on,.snd[aria-pressed="false"] .snd-off{display:none;}
 
 /* MAIN */
 main{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding-top:90px;padding-bottom:64px;}
@@ -296,7 +305,10 @@ dialog::backdrop{background:rgba(0,0,0,.9);backdrop-filter:blur(6px);}
   nav{padding:10px 16px;}
   .logo{font-size:1.5rem;letter-spacing:2px;}
   .tagline{font-size:.6rem;}
-  .nav-r{gap:14px;}
+  /* The counters and the sound button keep their room. If the logo is ever too wide (a fallback font), it is the logo that gives. */
+  nav{gap:10px;}
+  .logo{min-width:0;overflow:hidden;padding-right:3px;}
+  .nav-r{gap:14px;flex-shrink:0;}
   .ns-l{font-size:.55rem;letter-spacing:1px;}
   .ns-v{font-size:1rem;}
   .wcon{display:none;}
@@ -335,6 +347,17 @@ dialog::backdrop{background:rgba(0,0,0,.9);backdrop-filter:blur(6px);}
   .mb{padding:20px 18px;}
   .mbtn{font-size:1.25rem;padding:14px;}
   .admin-title{font-size:2rem;}
+}
+
+/* Narrow phones (360 wide is a common one): the nav closes up so the whole logo shows beside the widest counters. */
+@media(max-width:374px){
+  nav{padding:10px 12px;}
+  .nav-r{gap:10px;}
+}
+/* The narrowest phones: the logo steps down too, so the counters and the sound button all fit on one line. */
+@media(max-width:359px){
+  .logo{font-size:1.15rem;letter-spacing:1px;}
+  .tagline{font-size:.5rem;letter-spacing:1.5px;}
 }
 
 /* SHORT SCREENS. Small phones, phones with the browser bars showing, phones on their side, short laptop windows. */

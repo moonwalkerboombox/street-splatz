@@ -29,6 +29,11 @@ const TIER_COLORS = {
 };
 export const tierColor = (tier) => TIER_COLORS[tier] || TIER_COLORS['Pavement Card'];
 
+// Sound cues. The machine page plugs its player in here (main.js). The admin page does not, so it is silent.
+// A cue is asked for at the moment its animation starts, with the delay that animation needs.
+let cue = () => {};
+export const onCue = (fn) => { cue = fn; };
+
 /* ---------- the machine ---------- */
 
 // The pile behind the glass: one gumball for every card still in The Machine, in that card's flavor color.
@@ -142,20 +147,27 @@ function aimCoin() {
   coin.style.setProperty('--is', (s.width * 0.92 / coin.offsetWidth).toFixed(3));
 }
 
-export async function coinInsert() {
+// sound: false flies the coin without the slot and shake sounds (the preview build, where nothing is pulled).
+export async function coinInsert(sound = true) {
   clearGumball();
   aimCoin();
   $('coin').classList.add('inserted');
+  // The coin reaches the slot 80% of the way into its .66s flight. With reduced motion there is no flight:
+  // the coin is in at once, so the slot sound only waits for the pick up sound (0.12s) to get out of its way.
+  if (sound) cue('coinDrop', { delay: reducedMotion() ? 0.12 : 0.53 });
   await wait(460);
-  shake();
+  shake(sound && { delay: 0 });
   await wait(260);
 }
 // The coin stays in the machine (out of sight) from the moment the pull lands until The Peel is closed.
 export const coinAway = () => $('coin').classList.add('away');
 export const coinReset = () => $('coin').classList.remove('inserted', 'away');
 
-export function shake() {
+// sound: the options for the rattle that goes with the shake, or false for a silent one.
+// With reduced motion the machine holds still, so there is nothing to hear.
+export function shake(sound = {}) {
   const m = $('machine');
+  if (sound && !reducedMotion()) cue('rattle', sound);
   m.classList.remove('shake');
   void m.offsetWidth;
   m.classList.add('shake');
@@ -176,8 +188,13 @@ export async function dropGumball(color) {
   crank.classList.add('turn');
   b.classList.add('drop');
   shake();
-  $('machine').scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
-  await wait(1350);
+  // The gumball shows .35s in and lands 45% into its .9s fall, at .755s. The chute sound rolls for .44s and
+  // then lands, so it starts at .32s. With reduced motion the gumball is simply there, so the sound is too,
+  // and the gumball sits in the tray until that sound is over (.62s) so The Peel does not open on top of it.
+  const still = reducedMotion();
+  cue('chute', { delay: still ? 0 : 0.32 });
+  $('machine').scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' });
+  await (still ? new Promise((r) => setTimeout(r, 620)) : wait(1350));
   crank.classList.remove('turn');
 }
 export function clearGumball() {
@@ -189,15 +206,20 @@ export function clearGumball() {
 export function setupGlassEgg() {
   let count = 0; let timer = null; let active = false;
   const face = $('eeFace'); const hint = $('eeTapHint'); const glass = $('glass');
-  // Every tap rattles the pile.
+  // Every tap rattles the pile. It is heard only when gumballs really move: some are left and motion is on.
   const rattle = () => {
     glass.classList.remove('rattle');
     void glass.offsetWidth;
     glass.classList.add('rattle');
     setTimeout(() => glass.classList.remove('rattle'), 600);
+    const heard = balls.size > 0 && !reducedMotion();
+    if (heard) cue('rattle');
+    return heard;
   };
   glass.addEventListener('click', () => {
-    rattle();
+    const heard = rattle();
+    // The pitch climbs with each tap of a run.
+    cue('glass', { n: active ? 8 : Math.min(count, 8) });
     if (active) return;
     count += 1;
     if (count === 1) hint.style.opacity = '1';
@@ -207,7 +229,7 @@ export function setupGlassEgg() {
     active = true;
     hint.style.opacity = '0';
     face.classList.add('visible');
-    shake();
+    shake(!heard && {});
     setTimeout(() => { face.classList.remove('visible'); count = 0; active = false; hint.style.opacity = ''; }, 3200);
   });
 }
@@ -294,6 +316,9 @@ export function closeModal({ quiet } = {}) {
   if (!dialog.open) return;
   if (quiet === true) onClose = null;
   dialog.close();
+  // Run the view's closed handler now. The browser's close event comes later, on its own schedule,
+  // and a caller that goes straight on (CRANK AGAIN) must find the coin already put back.
+  const fn = onClose; onClose = null; view = null; fn?.();
 }
 export const modalOpen = () => dialog.open;
 export const currentView = () => (dialog.open ? view : null);
@@ -334,11 +359,19 @@ export function crankView(labels, step, txLink, { hint, action } = {}) {
   )];
 }
 
+// Starts fetching a card's art before The Peel needs it. The image is held so the browser keeps it ready.
+let ahead = null;
+export function preload(src) { ahead = new Image(); ahead.src = src; }
+
 // The Peel. The real card straight from cards.json.
-export function peelView({ card, statNames, txHash, txLink, actions }) {
+// onArt is called when the art is on screen, or when the note that it did not load is. It may be called twice.
+export function peelView({ card, statNames, txHash, txLink, actions, onArt }) {
   const img = h('img', { class: 'rimg', src: card.img, width: 520, height: 720, alt: `Card ${card.id}, ${card.name}, ${card.rarity}` });
   const frame = h('div', { class: 'rcard' }, img);
+  img.addEventListener('load', () => onArt?.());
+  if (img.complete && img.naturalWidth) onArt?.();
   img.addEventListener('error', () => {
+    onArt?.();
     // No stand in art. Say what the card is and offer another go at loading it.
     frame.replaceChildren(h('div', { class: 'rfail' },
       h('strong', null, `#${pad3(card.id)}`), h('span', null, card.name),
