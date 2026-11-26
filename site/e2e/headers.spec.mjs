@@ -66,6 +66,11 @@ test('card art is served as an image, and a missing image is not', async () => {
   expect(ok.status).toBe(200);
   expect(ok.headers.get('content-type')).toBe('image/png');
   expect(ok.headers.get('access-control-allow-origin')).toBe('*');
+  // The lighter copy the page shows.
+  const web = await get('/img/001.webp');
+  expect(web.status).toBe(200);
+  expect(web.headers.get('content-type')).toBe('image/webp');
+  expect(web.headers.get('access-control-allow-origin')).toBe('*');
   const missing = await get('/img/999.png');
   expect(missing.status).toBe(404);
   expect(missing.headers.get('content-type')).toMatch(/^text\/html/);

@@ -107,6 +107,15 @@ RARITY = {
     "Pavement Card": dict(level=0, g0="#CFCBDA", g1="#8E899F", dim="#24212F"),
 }
 
+# Street Legend foil: diagonal gold to hot orange sweep with hard shine bands. The
+# stops are placed so a shine band crosses the tier badge, the name plate trim and the
+# stat bars (t = position along the card diagonal).
+FOIL = [(0, "#FFD400"), (.07, "#FFF3A0"), (.13, "#FFC400"), (.22, "#FF7A00"), (.30, "#FFD21E"),
+        (.30, "#FFFBD6"), (.33, "#FFFBD6"), (.33, "#FFD21E"), (.45, "#FF8A00"), (.56, "#FFDC2E"),
+        (.56, "#FFFBD6"), (.585, "#FFFBD6"), (.585, "#FFDC2E"), (.68, "#FF7200"), (.76, "#FFE000"),
+        (.76, "#FFFBD6"), (.79, "#FFFBD6"), (.79, "#FFE000"), (.90, "#FF6A00"), (1, "#FFC400")]
+GOLD, GOLD_HI, GOLD_DEEP = "#FFC61A", "#FFFBD6", "#B8480A"
+
 # ------------------------------------------------------------------ font
 _FONT_FILE = os.path.join(HERE, "fonts", "bangers-latin.woff2")
 _METRICS = json.load(open(os.path.join(HERE, "fonts", "bangers-metrics.json"), encoding="utf-8"))
@@ -581,6 +590,10 @@ def background(ctx, pose):
     o.append(f'<circle cx="{gx:.0f}" cy="{gy:.0f}" r="196" fill="{ht}" opacity=".8"/>')
     o.append(f'<circle cx="{gx:.0f}" cy="{gy:.0f}" r="160" fill="{gl["mid"]}" opacity="{.75 * k:.2f}"/>')
     o.append(f'<circle cx="{gx:.0f}" cy="{gy:.0f}" r="128" fill="{gl["core"]}" opacity="{.55 * k:.2f}"/>')
+    if lvl >= 3:                                     # Street Legend: gold sunburst rim behind the glow
+        o.insert(-2, f'<path d="{star(gx, gy, 186, 169, 30, rng.uniform(0, 12))}{circle(gx, gy, 158)}" fill="{GOLD}" '
+                     f'fill-rule="evenodd" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
+        o.append(f'<circle cx="{gx:.0f}" cy="{gy:.0f}" r="160" fill="none" stroke="{GOLD_HI}" stroke-width="2.5"/>')
     if lvl >= 1:                                     # action rays
         n = 16 if lvl >= 2 else 12
         a0 = rng.uniform(0, math.tau / n)
@@ -589,6 +602,13 @@ def background(ctx, pose):
             x1, y1 = gx + math.cos(a - .035) * 420, gy + math.sin(a - .035) * 420
             x2, y2 = gx + math.cos(a + .035) * 420, gy + math.sin(a + .035) * 420
             x0, y0 = gx + math.cos(a) * 150, gy + math.sin(a) * 150
+            if lvl >= 3:                             # gold light rays, alternating wide and narrow
+                w = .06 if i % 2 else .032
+                x0, y0 = gx + math.cos(a) * 190, gy + math.sin(a) * 190
+                x1, y1 = gx + math.cos(a - w) * 460, gy + math.sin(a - w) * 460
+                x2, y2 = gx + math.cos(a + w) * 460, gy + math.sin(a + w) * 460
+                o.append(f'<path d="M{x0:.0f},{y0:.0f} L{x1:.0f},{y1:.0f} L{x2:.0f},{y2:.0f}Z" fill="#FFD86B" opacity=".26"/>')
+                continue
             o.append(f'<path d="M{x0:.0f},{y0:.0f} L{x1:.0f},{y1:.0f} L{x2:.0f},{y2:.0f}Z" fill="{gl["rays"]}" opacity=".16"/>')
     o.append(wall_prop)                              # over the halo dots, so they never speckle it
     # drain pipe
@@ -619,7 +639,9 @@ def background(ctx, pose):
     # sparkles: 0 / 1 / 2 / 3 by tier
     spots = ([(150, 104, 14), (88, 172, 11), (470, 400, 10)] if pipe_left
              else [(152, 106, 14), (56, 196, 11), (60, 404, 10)])
-    for sx, sy, ss in spots[:lvl]:
+    if lvl >= 3:
+        spots += [(446, 300, 9), (70, 300, 8)] if pipe_left else [(400, 104, 9), (466, 320, 8)]
+    for sx, sy, ss in (spots if lvl >= 3 else spots[:lvl]):
         o.append(f'<path d="{sparkle(sx + rng.randint(-5, 5), sy + rng.randint(-6, 6), ss)}" fill="#FFE14A" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
     # contact shadows
     for sx, srx in pose.get("shadows") or [(hx_, 150)]:
@@ -633,6 +655,8 @@ def frame(ctx):
     lvl = ctx.level
     rng = ctx.rng("frame")
     o = [f'<rect x="6" y="6" width="508" height="748" rx="28" fill="#0A0814"/>']
+    if lvl >= 3:
+        return "\n".join(o + [legend_frame(ctx)])
     if lvl == 0:
         o.append('<rect x="14" y="14" width="492" height="732" rx="22" fill="none" stroke="url(#rar)" stroke-width="5"/>')
         # worn: nicks cut through the frame line and a few scratches
@@ -649,12 +673,52 @@ def frame(ctx):
         o.append('<rect x="14" y="14" width="492" height="732" rx="22" fill="none" stroke="url(#rar)" stroke-width="6"/>')
     if lvl >= 2:
         o.append('<rect x="22" y="22" width="476" height="716" rx="15" fill="none" stroke="url(#rar)" stroke-width="1.5" opacity=".7"/>')
-    if lvl >= 3:   # foil: halftone sheen between the two frame lines + a glint on each corner
-        ht = ctx.halftone(ctx.tier["g0"], 7, 1.5, 30)
-        o.append(f'<path d="{rrect(17, 17, 486, 726, 19)}{rrect(21.5, 21.5, 477, 717, 15)}" fill="{ht}" fill-rule="evenodd" opacity=".55"/>')
-        for gx, gy in ((20.5, 20.5), (499.5, 20.5), (20.5, 739.5), (499.5, 739.5)):
-            o.append(f'<path d="{sparkle(gx, gy, 8)}" fill="#FFFBE0" stroke="{INK}" stroke-width="2" stroke-linejoin="round"/>')
     return "\n".join(o)
+
+
+def legend_frame(ctx):
+    """Street Legend: thick beveled gold foil frame, beaded, with riveted corner caps."""
+    o = []
+    # warm halftone foil sweeps across the dark card field (dim, so text stays readable)
+    ht = ctx.halftone("#3B2A0C", 10, 3.1, 30)
+    ht2 = ctx.halftone("#2A1D0A", 10, 2.1, 30)
+    field = rrect(22, 22, 476, 716, 12)
+    o.append(ctx.clipped(field, f'<path d="M250,0 H420 L60,760 H-110Z M560,330 V520 L330,760 H140Z" fill="{ht2}"/>'
+                                f'<path d="M300,0 H370 L10,760 H-60Z M560,400 V470 L280,760 H210Z" fill="{ht}"/>'))
+    band = rrect(9, 9, 502, 742, 25) + rrect(22, 22, 476, 716, 12)
+    o.append(f'<path d="{band}" fill="url(#foil)" fill-rule="evenodd"/>')
+    # bevel: light ridge on the outer half, dark groove on the inner half
+    o.append(f'<path d="{rrect(11, 11, 498, 738, 23)}" fill="none" stroke="{GOLD_HI}" stroke-width="2" opacity=".9"/>')
+    o.append(f'<path d="{rrect(20.2, 20.2, 479.6, 719.6, 13.5)}" fill="none" stroke="{GOLD_DEEP}" stroke-width="3.6"/>')
+    # beaded foil: one row of halftone dots running round the band
+    o.append(f'<path d="{rrect(15.2, 15.2, 489.6, 729.6, 19)}" fill="none" stroke="{GOLD_DEEP}" stroke-width="4.6" '
+             f'stroke-linecap="round" stroke-dasharray="0 11.5" opacity=".85"/>')
+    o.append(f'<path d="{band}" fill="none" stroke="{INK}" stroke-width="2.5"/>')
+    # corner caps: bright riveted plates wrapped round each corner
+    cap = ("M6,84 V34 Q6,6 34,6 H84 L78,16 L84,25 H40 Q25,25 25,40 V84 L16,78Z")
+    for tf in ("", "translate(520 0) scale(-1 1)", "translate(0 760) scale(1 -1)", "translate(520 760) scale(-1 -1)"):
+        o.append(f'<g transform="{tf}">'
+                 f'<path d="{cap}" fill="#FFE45C" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>'
+                 f'<path d="M10.5,70 V34 Q10.5,10.5 34,10.5 H70" fill="none" stroke="{GOLD_HI}" stroke-width="3" stroke-linecap="round"/>'
+                 f'<path d="M21,74 V38 Q21,21 38,21 H74" fill="none" stroke="#F08A00" stroke-width="3" stroke-linecap="round"/>'
+                 + "".join(f'<circle cx="{x}" cy="{y}" r="3.6" fill="{GOLD_DEEP}" stroke="{INK}" stroke-width="1.6"/>'
+                           f'<circle cx="{x + .9}" cy="{y - 1}" r="1.1" fill="{GOLD_HI}"/>'
+                           for x, y in ((21.5, 21.5), (15.5, 62), (62, 15.5)))
+                 + '</g>')
+    for gx, gy, gs in ((12, 12, 9), (508, 748, 9)):
+        o.append(f'<path d="{sparkle(gx, gy, gs)}" fill="#FFFFFF" stroke="{INK}" stroke-width="2" stroke-linejoin="round"/>')
+    return "\n".join(o)
+
+
+def crest(cx, cy):
+    """Street Legend crown seal: gold burst, ink disc, gold crown."""
+    return (f'<path d="{star(cx, cy, 27, 21.5, 12, -90)}" fill="{INK}" transform="translate(2.5 3.5)"/>'
+            f'<path d="{star(cx, cy, 27, 21.5, 12, -90)}" fill="url(#foil)" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="17" fill="{INK}"/>'
+            f'<g transform="translate({cx} {cy + .5})">'
+            f'<path d="M-11.5,7.5 L-13.5,-6 L-6.5,0 L0,-9.5 L6.5,0 L13.5,-6 L11.5,7.5Z" fill="#FFD21E" stroke="#FFD21E" stroke-width="1.6" stroke-linejoin="round"/>'
+            f'<circle cx="-13.5" cy="-7" r="2.2" fill="{GOLD_HI}"/><circle cx="0" cy="-10.5" r="2.4" fill="{GOLD_HI}"/><circle cx="13.5" cy="-7" r="2.2" fill="{GOLD_HI}"/>'
+            f'<path d="M-9.5,4 H9.5" stroke="{INK}" stroke-width="1.8"/></g>')
 
 
 def chrome(ctx):
@@ -662,14 +726,16 @@ def chrome(ctx):
     c = ctx.card
     o = ['<!-- CARD CHROME -->']
     # number plate
+    if lvl >= 3:
+        return legend_chrome(ctx, o)
     o.append(f'<path d="M34,28 H134 L122,68 H22Z" fill="{INK}" stroke="url(#rar)" stroke-width="3.5" stroke-linejoin="round"/>')
     o.append(text(78, 59.5, "#%03d" % ctx.number, 31, "#FFFFFF", "middle", .5))
     # tier badge
     label = c["rarity"].upper()
-    bw = 208 if lvl < 3 else 222
+    bw = 208
     x0 = 498 - bw + 12
     plate = f"M{x0},28 H498 L486,68 H{x0 - 12}Z"
-    room = bw - (86 if lvl >= 3 else 44)
+    room = bw - 44
     fs = fit(label, room, 27, 1.2)
     tx = 498 - bw / 2
     if lvl == 0:
@@ -679,10 +745,6 @@ def chrome(ctx):
         if lvl >= 2:
             o.append(f'<path d="{plate}" fill="{INK}" transform="translate(4 5)"/>')
         o.append(f'<path d="{plate}" fill="url(#rar)" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
-        if lvl >= 3:
-            o.append(f'<path d="M{x0 + 4},32 H{x0 + 60} L{x0 + 30},64 H{x0 - 6}Z" fill="#FFFFFF" opacity=".28"/>')
-            for sx in (x0 + 18, 498 - 30):
-                o.append(f'<path d="{star(sx, 48, 9)}" fill="{INK}"/>')
         o.append(text(tx, 48 + fs * .375, label, fs, INK, "middle", 1.2))
     # name banner
     plate = "M42,508 H492 L480,558 H30Z"
@@ -692,8 +754,7 @@ def chrome(ctx):
     o.append(f'<path d="{plate}" fill="{ban}"/>')
     if lvl >= 1:
         ht = ctx.halftone(p.hi if p.dark else p.shade)
-        o.append(ctx.clipped(plate, f'<path d="M440,500 H500 V564 H424Z" fill="{ht}"/><path d="M20,500 H98 L82,564 H20Z" fill="{ht}"/>'
-                             + (f'<path d="M150,500 h26 l-16,66 h-26z M186,500 h9 l-16,66 h-9z" fill="#FFFFFF" opacity=".3"/>' if lvl >= 3 else "")))
+        o.append(ctx.clipped(plate, f'<path d="M440,500 H500 V564 H424Z" fill="{ht}"/><path d="M20,500 H98 L82,564 H20Z" fill="{ht}"/>'))
     o.append(f'<path d="{plate}" fill="none" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>')
     name = c["name"].upper()
     fs = fit(name, 318, 46, 1.5)
@@ -720,10 +781,82 @@ def chrome(ctx):
         y += 27
     foot = "STREET SPLATZ · BASE NETWORK"
     o.append(text(260, 731, foot, 12, "#8C84B5", "middle", 3.4))   # clear of the y 738 inner hairline
-    if lvl >= 3:
-        w = text_w(foot, 12, 3.4) / 2 + 14
-        for sx in (260 - w, 260 + w):
-            o.append(f'<path d="{star(sx, 726.5, 5)}" fill="url(#rar)"/>')
+    return "\n".join(o)
+
+
+def legend_chrome(ctx, o):
+    """Street Legend chrome: foil plates, crown seal, set serial, gold trimmed name plate,
+    glossy gold stat bars. Plates sit 4 units further in than on the other tiers because
+    the frame is thicker."""
+    p, c = ctx.pal, ctx.card
+    # number plate
+    plate = "M38,28 H138 L126,68 H26Z"
+    o.append(f'<path d="{plate}" fill="{INK}" transform="translate(3 4)"/>')
+    o.append(f'<path d="{plate}" fill="{INK}" stroke="url(#foil)" stroke-width="4" stroke-linejoin="round"/>')
+    o.append(text(82, 59.5, "#%03d" % ctx.number, 31, "#FFF3B0", "middle", .5))
+    # set serial, only when it is true for the metadata this card came from
+    ser = c.get("serial")
+    if ser and ser[2] == c["rarity"]:
+        lab = "LEGEND %d/%d" % (ser[0], ser[1])
+        o.append(f'<path d="M150,37 H238 L231.4,59 H143.4Z" fill="{INK}" stroke="{GOLD}" stroke-width="1.8" stroke-linejoin="round"/>')
+        fs = fit(lab, 74, 15, 1.4)
+        o.append(text(190.7, 48 + fs * .375, lab, fs, "#FFD21E", "middle", 1.4))
+    # tier badge with the crown seal
+    label = c["rarity"].upper()
+    x0 = 268
+    plate = f"M{x0},28 H494 L482,68 H{x0 - 12}Z"
+    o.append(f'<path d="{plate}" fill="{INK}" transform="translate(4 5)"/>')
+    o.append(f'<path d="{plate}" fill="url(#foil)" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
+    ht = ctx.halftone("#F07800", 6.5, 1.9, 30)
+    o.append(ctx.clipped(plate, f'<path d="M430,20 H500 V76 H414Z" fill="{ht}"/>'
+                                f'<path d="M{x0 - 14},28 H494 V34 H{x0 - 14}Z" fill="#FFFFFF" opacity=".45"/>'))
+    o.append(f'<path d="{plate}" fill="none" stroke="{INK}" stroke-width="3" stroke-linejoin="round"/>')
+    fs = fit(label, 168, 28, 1.2)
+    o.append(text(390, 49 + fs * .375, label, fs, INK, "middle", 1.2))
+    o.append(crest(x0 - 2, 48))
+    # name plate: ink, gold foil trim, ink, plate
+    plate = "M48,513 H486 L474,563 H36Z"
+    ban = p.body if p.dark else p.base
+    o.append(f'<path d="{plate}" fill="{INK}" stroke="{INK}" stroke-width="17" stroke-linejoin="round" transform="translate(0 4)"/>')
+    o.append(f'<path d="{plate}" fill="none" stroke="{INK}" stroke-width="17" stroke-linejoin="round"/>')
+    o.append(f'<path d="{plate}" fill="none" stroke="url(#foil)" stroke-width="12.5" stroke-linejoin="round"/>')
+    o.append(f'<path d="M45,509.2 H487" stroke="{GOLD_HI}" stroke-width="1.6" opacity=".9"/>')
+    o.append(f'<path d="{plate}" fill="{ban}"/>')
+    ht = ctx.halftone(p.hi if p.dark else p.shade)
+    o.append(ctx.clipped(plate, f'<path d="M436,505 H500 V569 H420Z" fill="{ht}"/><path d="M20,505 H102 L86,569 H20Z" fill="{ht}"/>'
+                                f'<path d="M150,505 h26 l-16,66 h-26z M186,505 h9 l-16,66 h-9z" fill="#FFFFFF" opacity=".3"/>'))
+    o.append(f'<path d="{plate}" fill="none" stroke="{INK}" stroke-width="4" stroke-linejoin="round"/>')
+    for sx, sy in ((35.5, 538), (486.5, 538)):       # trim studs
+        o.append(f'<path d="{star(sx, sy, 8.5)}" fill="{GOLD_HI}" stroke="{INK}" stroke-width="2.2" stroke-linejoin="round"/>')
+    name = c["name"].upper()
+    fs = fit(name, 310, 46, 1.5)
+    sp = round(max(1.5, min(5.0, (294 - text_w(name, fs)) / len(name))), 2)
+    if lum(ban) > .30:
+        o.append(text(261, 538 + fs * .375, name, fs, INK, "middle", sp))
+    else:
+        o.append(text(261, 538 + fs * .375, name, fs, "#FFFFFF", "middle", sp,
+                      f'stroke="{INK}" stroke-width="5" paint-order="stroke" stroke-linejoin="round"'))
+    # stats: glossy gold bars
+    y = 587
+    for label, v in c["stats"]:
+        v = max(0, min(10, int(v)))
+        o.append(text(40, y + 14.5, label.upper(), 21, "#FFF6DC", "start", 1.1))
+        for i in range(10):
+            x = 180 + i * 25
+            if i < v:
+                o.append(f'<path d="M{x + 5},{y - 1} h20 l-5.7,16 h-20z" fill="url(#goldbar)" stroke="{INK}" stroke-width="1.6" stroke-linejoin="round"/>'
+                         f'<path d="M{x + 2.3},{y + 10.2} h18.4 l-1.2,3.4 h-18.4z" fill="{GOLD_DEEP}" opacity=".55"/>'
+                         f'<path d="M{x + 6.6},{y + .9} h17 l-1.3,3.6 h-17z" fill="#FFFFFF" opacity=".8"/>')
+            else:
+                o.append(f'<path d="M{x + 5},{y} h20 l-5,14 h-20z" fill="#33240F" stroke="{INK}" stroke-width="1.5"/>')
+        o.append(text(461, y + 15.5, str(v), 24, "#FFD21E" if v == 10 else "#FFFFFF", "end"))
+        o.append(text(464, y + 15.5, "/10", 13.5, "#C9B78A", "start", .5))
+        y += 26.5
+    foot = "STREET SPLATZ · BASE NETWORK"
+    o.append(text(260, 731, foot, 12, "#C9A24A", "middle", 3.4))
+    w = text_w(foot, 12, 3.4) / 2 + 14
+    for sx in (260 - w, 260 + w):
+        o.append(f'<path d="{star(sx, 726.5, 5.5)}" fill="{GOLD}"/>')
     return "\n".join(o)
 
 
@@ -745,9 +878,12 @@ def build(card, strict=False):
         frame(ctx),
         background(ctx, pose),
         f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="16" fill="none" stroke="{INK}" stroke-width="5"/>',
-        f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="16" fill="none" stroke="url(#rar)" stroke-width="{3 if ctx.level >= 3 else 2}"/>',
-        (f'<rect x="{px - 5.5}" y="{py - 5.5}" width="{pw + 11}" height="{ph + 11}" rx="20" fill="none" stroke="url(#rar)" stroke-width="1.5"/>'
-         if ctx.level >= 3 else ""),
+        (f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="16" fill="none" stroke="url(#rar)" stroke-width="2"/>'
+         if ctx.level < 3 else
+         f'<rect x="{px - 1}" y="{py - 1}" width="{pw + 2}" height="{ph + 2}" rx="17" fill="none" stroke="{INK}" stroke-width="11"/>'
+         f'<rect x="{px - 1}" y="{py - 1}" width="{pw + 2}" height="{ph + 2}" rx="17" fill="none" stroke="url(#foil)" stroke-width="6"/>'
+         f'<rect x="{px - 2.6}" y="{py - 2.6}" width="{pw + 5.2}" height="{ph + 5.2}" rx="18.6" fill="none" stroke="{GOLD_HI}" stroke-width="1.3" opacity=".85"/>'
+         f'<rect x="{px + 2.6}" y="{py + 2.6}" width="{pw - 5.2}" height="{ph - 5.2}" rx="13.4" fill="none" stroke="{INK}" stroke-width="1.6"/>'),
         '<!-- CHARACTER -->', '<g id="character">',
         '<!-- pose prop (behind the whole character) -->', '<g id="pose-prop">' + _join(pose.get("prop")) + '</g>',
         '<!-- gear: headband tails -->', headband_tails(ctx),
@@ -763,11 +899,19 @@ def build(card, strict=False):
         '</g>',
         chrome(ctx),
     ]
+    foil = ("" if ctx.level < 3 else
+            f'<linearGradient id="foil" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="{W}" y2="{H}">'
+            + "".join(f'<stop offset="{o_}" stop-color="{c_}"/>' for o_, c_ in FOIL) + '</linearGradient>\n'
+            # stat bars: one soft sheen sweeping along the rows, no hard bands (they read as gaps)
+            '<linearGradient id="goldbar" gradientUnits="userSpaceOnUse" x1="180" y1="590" x2="440" y2="700">'
+            '<stop offset="0" stop-color="#FFB000"/><stop offset=".4" stop-color="#FFD21E"/>'
+            '<stop offset=".62" stop-color="#FFF08A"/><stop offset=".8" stop-color="#FFC400"/>'
+            '<stop offset="1" stop-color="#FF9A00"/></linearGradient>\n')
     defs = f'''<defs>
 {font_css()}
 <linearGradient id="rar" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="{W}" y2="{H}">
 <stop offset="0" stop-color="{t["g0"]}"/><stop offset="1" stop-color="{t["g1"]}"/></linearGradient>
-<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+{foil}<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
 <stop offset="0" stop-color="#150F36"/><stop offset="1" stop-color="#2B1C5E"/></linearGradient>
 <pattern id="brick" width="56" height="28" patternUnits="userSpaceOnUse">
 <path d="M0,0H56 M0,14H56 M0,0V14 M28,14V28" stroke="#0E0926" stroke-width="2.5" fill="none"/></pattern>
@@ -782,9 +926,31 @@ def build(card, strict=False):
 def load_card(n, meta_dir=META):
     d = json.load(open(os.path.join(meta_dir, "%03d.json" % n), encoding="utf-8"))
     a = {x["trait_type"]: x["value"] for x in d["attributes"]}
-    return dict(number=n, name=d["name"].rsplit(" #", 1)[0], flavor=a["Flavor"], eyes=a["Eyes"],
+    card = dict(number=n, name=d["name"].rsplit(" #", 1)[0], flavor=a["Flavor"], eyes=a["Eyes"],
                 mouth=a["Mouth"], pose=a["Pose"], rarity=a["Rarity"],
                 stats=[(k, a[k]) for k in STAT_KEYS])
+    if RARITY.get(a["Rarity"], {}).get("level") == 3:
+        card["serial"] = tier_serial(n, a["Rarity"], meta_dir)
+    return card
+
+
+_tier_cache = {}
+
+
+def tier_serial(n, rarity, meta_dir=META):
+    """(rank, total, rarity): where card n sits among the cards of its rarity in meta_dir,
+    counted in card number order. Read from the metadata so the printed mark is always true."""
+    key = (os.path.abspath(meta_dir), rarity)
+    if key not in _tier_cache:
+        nums = []
+        for fn in sorted(os.listdir(meta_dir)):
+            if fn.endswith(".json") and fn[:-5].isdigit():
+                d = json.load(open(os.path.join(meta_dir, fn), encoding="utf-8"))
+                if any(x.get("trait_type") == "Rarity" and x.get("value") == rarity for x in d.get("attributes", [])):
+                    nums.append(int(fn[:-5]))
+        _tier_cache[key] = sorted(nums)
+    nums = _tier_cache[key]
+    return (nums.index(n) + 1, len(nums), rarity) if n in nums else None
 
 
 def main(argv=None):

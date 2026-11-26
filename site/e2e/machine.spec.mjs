@@ -17,10 +17,18 @@ async function expectCardEverywhere(page, peel, buyer, pulledSoFar) {
   expect((await read('ownerOf', [BigInt(peel.id)])).toLowerCase()).toBe(buyer.toLowerCase());
   expect(peel.name).toBe(card.name);
   expect(peel.rarity.toLowerCase()).toBe(card.rarity.toLowerCase());
-  expect(peel.src).toBe(`/img/${pad3(peel.id)}.png`);
+  // The page shows the lighter WebP copy. The full size PNG beside it is the token image in the metadata.
+  expect(peel.src).toBe(`/img/${pad3(peel.id)}.webp`);
   expect(peel.src).toBe(card.img);
+  expect(card.full).toBe(`/img/${pad3(peel.id)}.png`);
   expect(peel.stats.map(Number)).toEqual(card.stats);
   expect(await peel.img.evaluate((el) => el.complete && el.naturalWidth > 0), 'card image really loaded').toBe(true);
+  // The whole 1040 by 1520 card, at its own shape: not squashed, not cropped.
+  // Layout size, because the card is still popping in (scaled and turned) when The Peel opens.
+  const shape = await peel.img.evaluate((el) => { return { nw: el.naturalWidth, nh: el.naturalHeight, w: el.offsetWidth, h: el.offsetHeight, fit: getComputedStyle(el).objectFit }; });
+  expect([shape.nw, shape.nh]).toEqual([1040, 1520]);
+  expect(Math.abs(shape.w / shape.h - 1040 / 1520), `card drawn ${shape.w} by ${shape.h}`).toBeLessThan(0.01);
+  expect(shape.fit).toBe('fill');
   await expectPulled(page, pulledSoFar);
   await expect(ball(page, peel.id)).toHaveClass(/pulled/);
   await expect(ball(page, peel.id)).toHaveAttribute('aria-label', new RegExp(card.name));
@@ -72,7 +80,9 @@ test('b, c, k. happy path, then crank again for a second card, with a clean cons
   expect(uri).toBe(`${LIVE_URL}/meta/${first.id}.json`);
   const meta = await (await page.request.get(uri)).json();
   expect(meta.name).toContain(cardById.get(first.id).name);
-  expect(new URL(meta.image).pathname).toBe(first.src);
+  // The token image is the full size PNG of the card the page showed (the page itself shows the WebP copy).
+  expect(new URL(meta.image).pathname).toBe(`/img/${pad3(first.id)}.png`);
+  expect(first.src).toBe(`/img/${pad3(first.id)}.webp`);
   expect((await page.request.get(await read('contractURI'))).ok()).toBe(true);
 
   // c. crank again

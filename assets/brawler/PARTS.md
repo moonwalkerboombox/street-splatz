@@ -28,6 +28,7 @@ node render.mjs --out /tmp/x /tmp/x/016.svg                   # -> 016.png, 1040
 node render.mjs --sheet /tmp/x/sheet.png --cols 4 /tmp/x/*.png
 python3 optimize.py /tmp/x                                    # lossless PNG re-encode (about 30% smaller)
 python3 samples.py                                            # rebuild docs/art-direction/sample-sheet
+python3 build_set.py                                          # rebuild all 100: assets/png (lossless) and assets/web (WebP); same as `npm run cards`
 ```
 
 `--set key=value` overrides `flavor`, `eyes`, `mouth`, `pose`, `rarity`, `name` for previews.
@@ -59,7 +60,7 @@ dict(
     shoes=[...],          # sneakers, behind the body, in front of legs
     front=[...],          # limbs in front of body and face (near arm, near fist)
     # optional
-    prop=[...],           # scenery the character touches (Lean's lamp post), drawn behind the
+    prop=[...],           # scenery the character touches (Lean's brick wall), drawn behind the
                           #   headband tails and every limb
     fx="...",             # backdrop effects (speed lines), drawn inside the panel clip,
                           #   behind the character, skipped on Pavement Card

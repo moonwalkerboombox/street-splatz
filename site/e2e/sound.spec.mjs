@@ -562,7 +562,7 @@ test.describe('the peel sound and the card art', () => {
     await listen(page);
     await watchArt(page);
     let asked = null;
-    await page.route('**/img/*.png', async (route) => {
+    await page.route('**/img/*.webp', async (route) => {
       asked ??= Date.now();
       await new Promise((r) => setTimeout(r, 3500));
       await route.continue();
@@ -593,7 +593,7 @@ test.describe('the peel sound and the card art', () => {
 
   test('art that never loads: the sound plays once, with the card named instead', async ({ page, who }) => {
     await listen(page);
-    await page.route(/\/img\/\d+\.png/, (route) => route.abort());
+    await page.route(/\/img\/\d+\.webp/, (route) => route.abort());
     await addWallet(page, who.buyer);
     await openMachine(page);
     await toApprove(page);
@@ -608,7 +608,7 @@ test.describe('the peel sound and the card art', () => {
 
   test('art that hangs: the sound does not wait for ever, and does not play after The Peel is closed', async ({ page, who }) => {
     await listen(page);
-    await page.route('**/img/*.png', () => { /* never answered */ });
+    await page.route('**/img/*.webp', () => { /* never answered */ });
     await addWallet(page, who.buyer);
     await openMachine(page);
     await toApprove(page);

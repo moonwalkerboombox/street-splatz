@@ -8,7 +8,9 @@ All 100 cards are for sale. Nothing is held back. The pick uses public block dat
 
 | Path | What it is |
 |---|---|
-| `assets/` | The 100 source cards: art, metadata and the provenance fingerprint. Never edited by the build. |
+| `assets/` | The 100 source cards: art (`png/` full size, `web/` lighter copies for the page), metadata and the provenance fingerprint. Never edited by the build. |
+| `assets/brawler/` | The card artist: a generator that draws every card from the traits in `assets/metadata/`. See "Rebuild the card art" below. |
+| `assets/legacy/` | The first, flat card art and its generator. Kept for reference. Nothing reads it. |
 | `scripts/build-assets.mjs` | Turns `assets/` into the files the site serves: `site/public/img`, `site/public/meta` and `site/public/cards.json`. |
 | `scripts/sync-abi.mjs` | Copies the compiled contract ABI into `site/src/abi.js` so the site and the contract cannot drift. |
 | `scripts/check-build-env.mjs` | Stops `npm run build` when the settings would publish a broken site. |
@@ -56,6 +58,22 @@ Without step 4 the site runs in preview mode: everything shows, the coin says Th
 | `npm run build` | Builds the card files and the site into `site/dist`. Reads `SITE_URL`, `VITE_CHAIN`, `VITE_CONTRACT_ADDRESS` and the optional `VITE_FIFTY_CENT_PRICE_ETH`. |
 | `npm run abi` | Recompiles the contract and refreshes the ABI the site uses. Run it after any contract change. |
 | `npx wrangler deploy --dry-run` | Checks the Cloudflare settings without publishing. Run `npm ci` at the root first. |
+
+## Rebuild the card art
+
+The card images are checked in, so the site build never needs this. Run it only after changing the generator in `assets/brawler/`.
+
+```
+npm run cards            # redraws all 100 cards from assets/metadata (about 5 minutes)
+npm run build:assets     # refreshes the site files and the provenance fingerprint
+```
+
+`npm run cards` needs Python 3 with Pillow, and Node with Playwright's Chromium. It writes two files per card:
+
+- `assets/png/NNN.png`: the card at 1040 by 1520, lossless. This is the token image the metadata points at, and what the provenance fingerprint is made from.
+- `assets/web/NNN.webp`: the same card at the same size as WebP, about a third of the weight. The page shows this one in The Peel.
+
+The traits, names and numbers in `assets/metadata/` are fixed and are never written by the generator. The same tool versions give the same bytes on every run. Any change to a PNG changes the fingerprint in `assets/provenance.json`, so settle the art before the contract is deployed. `assets/brawler/PARTS.md` explains how the poses, eyes and mouths plug in.
 
 ## Going live
 

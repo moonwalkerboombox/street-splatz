@@ -469,10 +469,10 @@ export function crankView(labels, step, txLink, { hint, action } = {}) {
 let ahead = null;
 export function preload(src) { ahead = new Image(); ahead.src = src; }
 
-// The Peel. The real card straight from cards.json.
+// The Peel. The real card straight from cards.json. card.img is the WebP copy of the 1040 by 1520 card.
 // onArt is called when the art is on screen, or when the note that it did not load is. It may be called twice.
 export function peelView({ card, statNames, txHash, txLink, actions, onArt }) {
-  const img = h('img', { class: 'rimg', src: card.img, width: 520, height: 720, alt: `Card ${card.id}, ${card.name}, ${card.rarity}` });
+  const img = h('img', { class: 'rimg', src: card.img, width: 1040, height: 1520, alt: `Card ${card.id}, ${card.name}, ${card.rarity}` });
   const frame = h('div', { class: 'rcard' }, img);
   img.addEventListener('load', () => onArt?.());
   if (img.complete && img.naturalWidth) onArt?.();
