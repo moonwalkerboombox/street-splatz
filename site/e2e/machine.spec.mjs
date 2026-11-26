@@ -191,12 +191,145 @@ test('e. price changed while the wallet request was open: the page says why it f
   expect(await client.getBalance({ address: machineAddress() })).toBe(newPrice);
 });
 
+// The machine art. The glass holds one gumball for every card still in The Machine, in that card's own color.
+const glassIds = (page) => page.locator('#gbGrid .gb').evaluateAll((els) => els.map((el) => Number(el.dataset.id)).sort((x, y) => x - y));
+async function expectGlass(page, pulledIds) {
+  const left = cardsJson.cards.filter((c) => !pulledIds.includes(c.id));
+  await expect(page.locator('#gbGrid .gb')).toHaveCount(left.length);
+  expect(await glassIds(page)).toEqual(left.map((c) => c.id));
+  // Every gumball, not a sample: the color it was given and the color it is painted with.
+  const shown = new Map(await page.locator('#gbGrid .gb').evaluateAll((els) => els.map((el) =>
+    [Number(el.dataset.id), [el.style.getPropertyValue('--c'), getComputedStyle(el).getPropertyValue('--c').trim()]])));
+  for (const c of left) {
+    expect(shown.get(c.id).map((v) => v.toLowerCase()), `gumball ${c.id}`).toEqual([c.color.toLowerCase(), c.color.toLowerCase()]);
+  }
+}
+const hexToRgb = (hex) => { const n = parseInt(hex.slice(1), 16); return `rgb(${n >> 16}, ${(n >> 8) & 255}, ${n & 255})`; };
+
+test('m. the glass holds one gumball per card left, the pulled card\'s gumball leaves and lands in the chute in its color', async ({ page, problems, who }) => {
+  const early = await pullDirect(who.crowd);
+  await addWallet(page, who.buyer);
+  await openMachine(page);
+  await expectPulled(page, 1);
+  await expectGlass(page, [early]);
+  await expect(page.locator('#soldStamp')).toBeHidden();
+  await expect(page.locator('#machine')).not.toHaveClass(/closed/);
+
+  // The coin flies to the slot on the machine, wherever the layout has put it.
+  await page.locator('#coin').click();
+  await expect(page.locator('#coin')).toHaveClass(/inserted/);
+  const aim = await page.evaluate(() => {
+    const coin = document.getElementById('coin');
+    const off = coin.classList.contains('inserted');
+    coin.classList.remove('inserted');
+    // Measured where the coin rests: the click leaves the pointer over it, and a hover lifts it.
+    coin.style.transform = 'none'; coin.style.transition = 'none';
+    const c = coin.getBoundingClientRect(); const s = document.querySelector('#machine .m-slot').getBoundingClientRect();
+    coin.style.transform = ''; coin.style.transition = '';
+    if (off) coin.classList.add('inserted');
+    return {
+      ix: parseFloat(coin.style.getPropertyValue('--ix')), wantX: s.left + s.width / 2 - c.left - c.width / 2,
+      iy: parseFloat(coin.style.getPropertyValue('--iy')), want: s.top + s.height / 2 - c.top - c.height / 2,
+    };
+  });
+  expect(Math.abs(aim.iy - aim.want)).toBeLessThan(2);
+  expect(Math.abs(aim.ix - aim.wantX)).toBeLessThan(2);
+  await expect(title(page)).toHaveText('PULL A SPLATZ');
+  await button(page, 'CONNECT WALLET').click();
+  await modal(page).getByRole('button', { name: 'Mock Wallet' }).click();
+  await button(page, 'DROP THE COIN').click();
+  const peel = await readPeel(page);
+
+  const card = cardById.get(peel.id);
+  await expectGlass(page, [early, peel.id]);
+  await expect(page.locator(`#gbGrid .gb[data-id="${peel.id}"]`)).toHaveCount(0);
+  await expect(page.locator('#dgb')).toHaveClass(/drop/);
+  expect((await page.locator('#dgb').evaluate((el) => el.style.getPropertyValue('--gc'))).toLowerCase()).toBe(card.color.toLowerCase());
+  // The color as painted, not only as set.
+  expect(await page.locator('#dgb circle').nth(1).evaluate((el) => getComputedStyle(el).fill)).toBe(hexToRgb(card.color));
+  expect(await page.locator('#dgb').evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+  // Closing The Peel clears the chute and puts the coin back.
+  await button(page, 'Close').click();
+  await expect(page.locator('#dgb')).not.toHaveClass(/drop/);
+  await expect(page.locator('#coin')).not.toHaveClass(/inserted/);
+
+  // Someone else pulls: on the next reading that gumball goes too.
+  const other = await pullDirect(who.crowd);
+  await page.locator('#retryBtn').dispatchEvent('click');
+  await expectPulled(page, 3);
+  await expectGlass(page, [early, peel.id, other]);
+  expect(problems).toEqual([]);
+});
+
+test.describe('with reduced motion', () => {
+  test.use({ reducedMotion: 'reduce' });
+  test('m. the machine holds still and the pull still lands', async ({ page, problems, who }) => {
+    await addWallet(page, who.buyer);
+    await openMachine(page);
+    await expectPulled(page, 0);
+    expect(await page.evaluate(() => document.getAnimations().filter((a) => a.effect?.target?.closest?.('#machine, #coin')).length)).toBe(0);
+    const peel = await pullThroughSite(page);
+    await expectGlass(page, [peel.id]);
+    await expect(page.locator('#dgb')).toHaveClass(/drop/);
+    expect(await page.locator('#dgb').evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+    expect(await page.evaluate(() => document.getAnimations().filter((a) => a.effect?.target?.closest?.('#machine, #coin')).length)).toBe(0);
+    // The coin is out of sight while The Peel is up and comes back, still, when it closes.
+    await expect(page.locator('#coin')).toHaveCSS('opacity', '0');
+    await button(page, 'Close').click();
+    await expect(modal(page)).toBeHidden();
+    await expect(page.locator('#coin')).not.toHaveClass(/inserted|away/);
+    await expect(page.locator('#coin')).toHaveCSS('opacity', '1');
+    await expect(page.locator('#dgb')).not.toHaveClass(/drop/);
+    expect(await page.evaluate(() => document.getAnimations().filter((a) => a.effect?.target?.closest?.('#machine, #coin')).length)).toBe(0);
+    await page.locator('#coin').click();
+    await expect(title(page)).toHaveText('PULL A SPLATZ');
+    expect(problems).toEqual([]);
+  });
+});
+
+test('m. the glass answers a tap: the pile rattles, the hint lights up and ten taps wake the face', async ({ page }) => {
+  await openMachine(page);
+  await expectPulled(page, 0);
+  const glass = page.locator('#glass');
+  await glass.click();
+  await expect(glass).toHaveClass(/rattle/);
+  await expect(page.locator('#eeTapHint')).toHaveCSS('opacity', '1');
+  await expect(page.locator('#eeFace')).not.toHaveClass(/visible/);
+  // The lit hint is painted over the pile, not under it. (The art ignores the pointer, so switch hit testing on.)
+  await page.addStyleTag({ content: '#eeTapHint,#eeFace,#eeFace *,.gb{pointer-events:auto!important}' });
+  const topAt = (points) => page.evaluate((pts) => pts.map(([x, y]) => {
+    const el = document.elementFromPoint(x, y);
+    return el?.closest('#eeFace, #eeTapHint')?.id || el?.className || el?.tagName;
+  }), points);
+  const hintWords = await page.locator('#eeTapHint').evaluate((el) => {
+    const range = document.createRange(); range.selectNodeContents(el);
+    return [...range.getClientRects()].map((r) => [r.left + r.width / 2, r.top + r.height / 2]);
+  });
+  expect(hintWords.length).toBeGreaterThan(0);
+  expect(await topAt(hintWords)).toEqual(hintWords.map(() => 'eeTapHint'));
+  await expect(page.locator('#eeFace')).not.toHaveClass(/visible/);
+  for (let i = 0; i < 9; i++) await glass.click();
+  await expect(page.locator('#eeFace')).toHaveClass(/visible/);
+  await expect(page.locator('#eeFace')).toBeInViewport({ ratio: 1 });
+  // With all 100 gumballs in the glass the face is on top of the pile across its whole width, eyes to chin.
+  await expect.poll(() => page.locator('#eeFace').evaluate((el) => el.getBoundingClientRect().width / el.offsetWidth)).toBeGreaterThan(0.98);
+  await expect(page.locator('#gbGrid .gb')).toHaveCount(100);
+  const face = await page.locator('#eeFace svg').boundingBox();
+  const at = (fx, fy) => [face.x + face.width * fx, face.y + face.height * fy];
+  const facePoints = [at(0.5, 0.5), at(0.33, 0.49), at(0.67, 0.49), at(0.5, 0.2), at(0.5, 0.78), at(0.15, 0.5), at(0.85, 0.5)];
+  expect(await topAt(facePoints)).toEqual(facePoints.map(() => 'eeFace'));
+});
+
 test('f. sale closed: the page says so and never asks the wallet for anything', async ({ page, who }) => {
   await send(who.owner, 'setSaleOpen', [false]);
   await addWallet(page, who.buyer);
   await openMachine(page);
   await expect(page.locator('#ctaLabel')).toHaveText('The Machine is closed for now.');
   await expect(page.locator('#coin')).toHaveClass(/dim/);
+  // The machine itself goes dark and hangs out its CLOSED sign.
+  await expect(page.locator('#machine')).toHaveClass(/closed/);
+  await expect(page.locator('#machine .m-sign')).toBeVisible();
+  await expect(page.locator('#machine .m-sign')).toHaveText('CLOSED');
   await expectPulled(page, 0);
   await page.locator('#coin').click();
   await expect(title(page)).toHaveText('CLOSED FOR NOW');
@@ -307,6 +440,12 @@ test('i. sold out: SOLD OUT stamp, OpenSea link in place of the coin, no way to 
     await expect(page.locator('#soldLink')).toBeVisible();
     await expect(page.locator('#soldLink')).toHaveText('View on OpenSea');
     await expect(page.locator('#soldLink')).toHaveAttribute('href', `https://opensea.io/assets/base/${chain.address}`);
+    // The empty machine, the link and the headline are all on the first screen.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(page.locator('#machine')).toBeInViewport({ ratio: 1 });
+    await expect(page.locator('#soldLink')).toBeInViewport({ ratio: 1 });
+    await expect(page.locator('#ctaLabel')).toBeInViewport({ ratio: 1 });
+    await expect(page.locator('#gbGrid .gb')).toHaveCount(0);
     await expect(page.locator('#ctaLabel')).toHaveText('Sold out. All 100 pulled.');
     await expect(page.locator('#galleryGrid .gball.pulled')).toHaveCount(100);
     await expect(page.locator('#galleryGrid .gball.locked')).toHaveCount(0);

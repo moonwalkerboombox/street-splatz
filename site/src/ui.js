@@ -31,30 +31,128 @@ export const tierColor = (tier) => TIER_COLORS[tier] || TIER_COLORS['Pavement Ca
 
 /* ---------- the machine ---------- */
 
-// Decorative gumballs in brand colors. How full the glass looks follows how many cards are left.
-const SIZES = [22, 20, 18, 22, 20, 18, 20, 22, 18, 20, 16, 20, 22, 18, 20, 18, 22, 16, 20, 18, 22, 20, 16, 18, 20, 22, 18, 20, 16, 18, 20, 18, 22, 16, 20, 18, 20, 22, 16, 18, 20, 22, 18, 20, 16];
-const BALL_COLORS = ['#e31e24', '#e31e24', '#e31e24', '#1a1aff', '#1a1aff', '#f0f0f0', '#f0f0f0', '#1a1a1a', '#cc1a1f', '#3030dd', '#e8e8e8'];
-let shownBalls = -1;
-export function renderGlass(remaining, total) {
-  const count = Math.ceil((remaining / total) * SIZES.length);
-  $('soldStamp').hidden = remaining !== 0;
-  $('eeTapHint').hidden = remaining === 0;
-  if (count === shownBalls) return;
-  shownBalls = count;
-  $('gbGrid').replaceChildren(...SIZES.slice(0, count).map((s, i) => {
-    const d = h('div', { class: 'gbl' });
-    d.style.cssText = `width:${s}px;height:${s}px;background:${BALL_COLORS[(i * 7 + 3) % BALL_COLORS.length]}`;
-    return d;
-  }));
+// The pile behind the glass: one gumball for every card still in The Machine, in that card's flavor color.
+const rng = (s) => () => (s = Math.imul(s ^ s >>> 15, 2246822507) ^ Math.imul(s ^ s >>> 13, 3266489909), ((s ^= s >>> 16) >>> 0) / 4294967296);
+// Pile slots inside the round glass, in percent of the glass box, bottom row first. About 110 of them.
+// The bottom row rests on the collar's top edge (86% down the glass box), so the last few gumballs stay in view.
+const SLOTS = (() => {
+  const r = rng(7); const out = []; const D = 9.8; const SP = 8.5; const RH = 6.5; const R = 50 - D / 2 + 1;
+  for (let y = 80, row = 0; y > 6; y -= RH, row++) {
+    const half = Math.sqrt(Math.max(0, R * R - (y - 50) * (y - 50))); const line = [];
+    for (let k = -7; k <= 7; k++) {
+      const x = (k + (row % 2 ? 0.5 : 0)) * SP;
+      if (Math.abs(x) <= half) line.push({ row, x: 50 + x + (r() - 0.5) * 1.6, y: y + (r() - 0.5) * 1.6, d: D * (0.9 + r() * 0.2), k: Math.abs(x) + r() * 18 });
+    }
+    line.sort((p, q) => p.k - q.k);
+    out.push(...line);
+  }
+  return out;
+})();
+// The darker side of a gumball. A browser without color-mix gets the plain color, as the CSS does.
+const canMix = () => window.CSS?.supports?.('color', 'color-mix(in srgb,red,blue)');
+export const gumballShade = (color) => (canMix() ? `color-mix(in srgb,${color} 52%,#3B1F7A)` : color);
+
+// Cards in the order they sit in the pile. Shuffled once, the same way on every visit, so flavors mix.
+let pileOrder = null;
+function pileOf(cards) {
+  if (pileOrder && pileOrder.length === cards.length) return pileOrder;
+  const r = rng(99);
+  pileOrder = cards.map((c) => [r(), c]).sort((p, q) => p[0] - q[0]).map((p) => p[1]);
+  return pileOrder;
+}
+
+// cards is every card in cards.json. pulledIds is the set of ids that have left The Machine.
+// A pulled card's own gumball is taken out and the ones above it drop down a row to fill the gap.
+const balls = new Map(); // card id -> { el, slot }
+const seat = []; // slot index -> card id, or undefined for an empty slot
+function place(id, slot) {
+  const b = balls.get(id); const s = SLOTS[slot];
+  b.slot = slot; seat[slot] = id;
+  b.el.style.left = `${s.x.toFixed(1)}%`;
+  b.el.style.top = `${s.y.toFixed(1)}%`;
+  b.el.style.width = `${s.d.toFixed(1)}%`;
+  // Higher rows paint over lower ones, as they do in the art. #gbGrid keeps these numbers to itself, so the
+  // machine's front art, the hint and the easter egg face all paint over the whole pile.
+  b.el.style.zIndex = String(slot);
+}
+function settle(slot) {
+  for (;;) {
+    let best = -1;
+    SLOTS.forEach((s, i) => {
+      if (s.row !== SLOTS[slot].row + 1 || seat[i] == null) return;
+      if (best < 0 || Math.abs(s.x - SLOTS[slot].x) < Math.abs(SLOTS[best].x - SLOTS[slot].x)) best = i;
+    });
+    if (best < 0) return;
+    const id = seat[best];
+    seat[best] = undefined;
+    place(id, slot);
+    slot = best;
+  }
+}
+// known is false until the chain has been read once. Until then the glass is empty: no gumball is shown
+// for a card the page cannot vouch for, and no SOLD OUT stamp either.
+export function renderGlass(cards, pulledIds, known = true) {
+  const grid = $('gbGrid');
+  if (!known) {
+    balls.clear(); seat.length = 0;
+    grid.replaceChildren();
+    $('soldStamp').hidden = true;
+    $('eeTapHint').hidden = false;
+    return;
+  }
+  const left = pileOf(cards).filter((c) => !pulledIds.has(c.id));
+  $('soldStamp').hidden = left.length !== 0;
+  $('eeTapHint').hidden = left.length === 0;
+  // First drawing (or a card came back, which only a test chain can do): lay the pile out from the bottom.
+  if (!balls.size || left.some((c) => !balls.has(c.id))) {
+    balls.clear(); seat.length = 0;
+    grid.replaceChildren(...left.map((c, i) => {
+      const el = h('div', { class: 'gb', 'data-id': String(c.id) });
+      el.style.setProperty('--c', c.color);
+      balls.set(c.id, { el, slot: -1 });
+      place(c.id, i % SLOTS.length);
+      return el;
+    }));
+    // The pile tumbles in.
+    grid.classList.remove('fill');
+    void grid.offsetWidth;
+    if (left.length) grid.classList.add('fill');
+    return;
+  }
+  const keep = new Set(left.map((c) => c.id));
+  for (const [id, b] of balls) {
+    if (keep.has(id)) continue;
+    b.el.remove(); balls.delete(id); seat[b.slot] = undefined;
+    settle(b.slot);
+  }
+}
+
+// Points the coin's flight at the slot on the machine, wherever the layout has put the two.
+// The coin is measured where it rests, not where a hover or a press has nudged it, because the flight
+// starts from the resting spot.
+function aimCoin() {
+  const coin = $('coin'); const from = coin.offsetParent;
+  const s = $('machine').querySelector('.m-slot').getBoundingClientRect();
+  if (!from || !coin.offsetWidth || !s.width) return;
+  const f = from.getBoundingClientRect();
+  const cx = f.left + from.clientLeft + coin.offsetLeft + coin.offsetWidth / 2;
+  const cy = f.top + from.clientTop + coin.offsetTop + coin.offsetHeight / 2;
+  coin.style.setProperty('--ix', `${s.left + s.width / 2 - cx}px`);
+  coin.style.setProperty('--iy', `${s.top + s.height / 2 - cy}px`);
+  coin.style.setProperty('--is', (s.width * 0.92 / coin.offsetWidth).toFixed(3));
 }
 
 export async function coinInsert() {
+  clearGumball();
+  aimCoin();
   $('coin').classList.add('inserted');
-  await wait(200);
+  await wait(460);
   shake();
-  await wait(420);
+  await wait(260);
 }
-export const coinReset = () => $('coin').classList.remove('inserted');
+// The coin stays in the machine (out of sight) from the moment the pull lands until The Peel is closed.
+export const coinAway = () => $('coin').classList.add('away');
+export const coinReset = () => $('coin').classList.remove('inserted', 'away');
 
 export function shake() {
   const m = $('machine');
@@ -63,24 +161,43 @@ export function shake() {
   m.classList.add('shake');
   setTimeout(() => m.classList.remove('shake'), 600);
 }
-export const crankHandle = (on) => $('mIndent').classList.toggle('spin', on);
+// The handle keeps turning while a pull is in flight.
+export const crankHandle = (on) => $('crank').classList.toggle('spin', on);
 
+// One last turn of the handle, then the gumball lands in the chute in the color of the card that was pulled.
+// It stays in the tray until clearGumball.
 export async function dropGumball(color) {
-  const b = $('dgb');
-  b.style.background = color;
+  const b = $('dgb'); const crank = $('crank');
+  b.style.setProperty('--gc', color);
+  b.style.setProperty('--gs', gumballShade(color));
   b.classList.remove('drop');
-  void b.offsetWidth;
+  crank.classList.remove('turn');
+  void b.getBoundingClientRect();
+  crank.classList.add('turn');
   b.classList.add('drop');
+  shake();
   $('machine').scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
-  await wait(1000);
-  b.classList.remove('drop');
+  await wait(1350);
+  crank.classList.remove('turn');
+}
+export function clearGumball() {
+  $('dgb').classList.remove('drop');
+  $('crank').classList.remove('turn');
 }
 
 // Easter egg from the mockup. Ten quick taps on the glass and something looks back.
 export function setupGlassEgg() {
   let count = 0; let timer = null; let active = false;
-  const face = $('eeFace'); const hint = $('eeTapHint');
-  $('glass').addEventListener('click', () => {
+  const face = $('eeFace'); const hint = $('eeTapHint'); const glass = $('glass');
+  // Every tap rattles the pile.
+  const rattle = () => {
+    glass.classList.remove('rattle');
+    void glass.offsetWidth;
+    glass.classList.add('rattle');
+    setTimeout(() => glass.classList.remove('rattle'), 600);
+  };
+  glass.addEventListener('click', () => {
+    rattle();
     if (active) return;
     count += 1;
     if (count === 1) hint.style.opacity = '1';
@@ -152,7 +269,9 @@ export function renderDrops(pulls, cardById, shortAddress) {
 const dialog = $('modal');
 let onClose = null;
 let view = null;
-dialog?.addEventListener('close', () => { const fn = onClose; onClose = null; view = null; fn?.(); });
+// The close event arrives a moment after close(). If another view was opened in between (the Cranking view
+// closing as The Peel opens), the event belongs to the old view and must not run the new view's handler.
+dialog?.addEventListener('close', () => { if (dialog.open) return; const fn = onClose; onClose = null; view = null; fn?.(); });
 // A tap on the dark backdrop closes, like the X does.
 dialog?.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
 $('modalClose')?.addEventListener('click', () => dialog.close());
@@ -170,7 +289,12 @@ export function openModal(title, kids, { closed, view: name } = {}) {
   ($('modalBody').querySelector('[data-focus]') || $('modalClose')).focus({ preventScroll: true });
   dialog.querySelector('.modal').scrollTop = 0;
 }
-export function closeModal() { if (dialog.open) dialog.close(); }
+// quiet: true closes without running the view's closed handler.
+export function closeModal({ quiet } = {}) {
+  if (!dialog.open) return;
+  if (quiet === true) onClose = null;
+  dialog.close();
+}
 export const modalOpen = () => dialog.open;
 export const currentView = () => (dialog.open ? view : null);
 

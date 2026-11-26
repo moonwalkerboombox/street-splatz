@@ -96,11 +96,13 @@ function render() {
   $('footNet').textContent = NET;
 
   // machine and call to action
-  ui.renderGlass(remaining, S.total);
+  // Before the first reading the glass is empty, because the page does not know yet what is left.
+  // After that it holds exactly the cards not yet pulled. The preview build shows them all.
+  ui.renderGlass(S.data.cards, pulledIds, known);
+  $('machine').classList.toggle('closed', state === 'closed');
   const sold = state === 'soldout';
   const link = sold ? collectionLink() : null;
   $('coin').hidden = sold;
-  $('coinArrow').hidden = sold || state === 'closed' || state === 'error';
   $('coin').classList.toggle('dim', state === 'closed' || state === 'error');
   $('soldLink').hidden = !link;
   if (link) { $('soldLink').href = link.url; $('soldLink').textContent = link.label; }
@@ -124,6 +126,7 @@ function render() {
   $('noticeText').textContent = m
     ? `Could not reach ${NET}. These numbers may be out of date.`
     : `Could not reach ${NET}.`;
+  fitNotice();
 
   // explainer, present tense until the last card is gone
   const legends = S.data.tiers['Street Legend'];
@@ -154,6 +157,16 @@ function render() {
     ? 'Nothing is left to pull.'
     : 'Next pull is the share of the cards left that belong to each tier. Every card left has the same chance.';
   $('footLegends').textContent = known ? String(left['Street Legend'] ?? 0) : '...';
+}
+
+// The notice and its Retry button belong on the first screen. If they would fall below it, the machine
+// gives up exactly that much height (--fit caps its width, see .mach in style.css).
+function fitNotice() {
+  const mach = $('machine'); const notice = $('notice');
+  mach.style.removeProperty('--fit');
+  if (notice.hidden) return;
+  const over = notice.getBoundingClientRect().bottom + window.scrollY + 10 - document.documentElement.clientHeight;
+  if (over > 0) mach.style.setProperty('--fit', `${Math.max(0, (mach.offsetHeight - over) * (400 / 540))}px`);
 }
 
 function renderStatic() {
@@ -379,7 +392,9 @@ async function drop(shownPrice) {
     S.busy = false;
     S.run = null;
     ui.crankHandle(false);
-    ui.closeModal();
+    // The coin is in the machine now. It comes back when The Peel is closed, not while the gumball drops.
+    ui.coinAway();
+    ui.closeModal({ quiet: true });
     await Promise.all([ui.dropGumball(card.color), refresh()]);
     showPeel(card, hash);
   } catch (err) {
@@ -445,7 +460,7 @@ function showPeel(card, hash) {
       view ? ui.linkBtn(view.label, view.url) : null,
       btn('Close', ui.closeModal, 's', !again),
     ],
-  }), { closed: ui.coinReset });
+  }), { closed: () => { ui.coinReset(); ui.clearGumball(); } });
 }
 
 /* ---------- start ---------- */
@@ -463,6 +478,7 @@ async function start() {
   render();
   $('coin').addEventListener('click', onCoin);
   $('retryBtn').addEventListener('click', refresh);
+  window.addEventListener('resize', fitNotice);
   if (preview) return;
   await refresh();
   setInterval(() => { if (!document.hidden) refresh(); }, 30_000);
